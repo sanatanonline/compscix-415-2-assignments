@@ -314,6 +314,9 @@ $(document).ready(function () {
 [347] “Africa/Lusaka” “Africa/Harare”</p>
 <p>QUESTION 3: Can you extract and show the unique entries from the country column in WorldCities using one line of code and two %&gt;% operators?</p>
 <p>WorldCities %&gt;% select(country) %&gt;% unique()</p>
+<p>WorldCities %&gt;% ggplot(aes(x = population)) + geom_histogram()</p>
+<p>QUESTION 4: Make one more histogram of the population and add a new x-label, a new ylabel, a new title (use ggtitle(‘my title’)), and change the theme of the plot using theme_bw().</p>
+<p>WorldCities %&gt;% ggplot(aes(x = population)) + geom_histogram() + xlab(‘City Population’) + ylab(‘Population Count’) + ggtitle(‘City Population Histogram’) + theme_bw()</p>
 
 
 
