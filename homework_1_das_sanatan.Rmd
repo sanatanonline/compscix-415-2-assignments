@@ -223,3 +223,9 @@ unique(region)
 [347] "Africa/Lusaka"                  "Africa/Harare" 
 
 
+QUESTION 3: Can you extract and show the unique entries from the country column in
+WorldCities using one line of code and two %>% operators?
+
+WorldCities %>% select(country) %>% unique()
+
+
