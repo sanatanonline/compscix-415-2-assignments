@@ -8,23 +8,218 @@ date : 02/05/2018
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+My Github repository for my assignments can be found at this URL:https://github.com/sanatanonline/compscix-415-2-assignments
 
-## R Markdown
+library(mdsr)
+library(tidyverse)
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+“‘{r load_packages, warning=FALSE, message=FALSE}
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+data("WorldCities")
 
-```{r cars}
-summary(cars)
-```
+glimpse(WorldCities)
 
-## Including Plots
+QUESTION 1: How many observations and variables are there in this data set? What are
+some of the variable names? Type up your answer in your document using complete sentences.
 
-You can also embed plots, for example:
+Total observations: 23018
+Variable names: 
+$ code          <int> 3040051, 3041563, 290594, 291074, 291696, 292223, 292...
+$ name          <chr> "les Escaldes", "Andorra la Vella", "Umm al Qaywayn",...
+$ latitude      <dbl> 42.50729, 42.50779, 25.56473, 25.78953, 25.33132, 25....
+$ longitude     <dbl> 1.53414, 1.52109, 55.55517, 55.94320, 56.34199, 55.30...
+$ country       <chr> "AD", "AD", "AE", "AE", "AE", "AE", "AE", "AE", "AE",...
+$ countryRegion <chr> "8", "7", "7", "5", "6", "3", "4", "6", "1", "4", "1"...
+$ population    <dbl> 15853, 20430, 44411, 115949, 33575, 1137347, 26395, 5...
+$ regionCode    <int> 1033, 1037, 2, 2, 20, 11, 4, 6, 16, 15, 275, 4, 114, ...
+$ region        <chr> "Europe/Andorra", "Europe/Andorra", "Asia/Dubai", "As...
+$ date          <chr> "10/15/08", "5/30/10", "11/3/12", "11/30/12", "11/3/1...
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+WorldCities <- head(WorldCities, 200) # 200 rows
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+country_col <- WorldCities$country
+
+unique(country_col)
+
+QUESTION 2: There is a column called region in the data set. Can you extract this and show
+only the unique values?
+
+region = WorldCities$region
+unique(region)
+
+[1] "Europe/Andorra"                 "Asia/Dubai"                    
+  [3] "Asia/Kabul"                     "America/Antigua"               
+  [5] "America/Anguilla"               "Europe/Tirane"                 
+  [7] "Asia/Yerevan"                   "Africa/Luanda"                 
+  [9] "America/Argentina/Buenos_Aires" "America/Argentina/Cordoba"     
+ [11] "America/Argentina/Salta"        "America/Argentina/Tucuman"     
+ [13] "America/Argentina/San_Juan"     "America/Argentina/Ushuaia"     
+ [15] "America/Argentina/Catamarca"    "America/Argentina/Jujuy"       
+ [17] "America/Argentina/Mendoza"      "America/Argentina/San_Luis"    
+ [19] "America/Argentina/Rio_Gallegos" "America/Argentina/La_Rioja"    
+ [21] "Pacific/Pago_Pago"              "Europe/Vienna"                 
+ [23] "Australia/Adelaide"             "Australia/Perth"               
+ [25] "Australia/Brisbane"             "Australia/Darwin"              
+ [27] "Australia/Melbourne"            "Australia/Sydney"              
+ [29] "Australia/Hobart"               "Australia/Broken_Hill"         
+ [31] "America/Aruba"                  "Europe/Mariehamn"              
+ [33] "Asia/Baku"                      "Europe/Sarajevo"               
+ [35] "America/Barbados"               "Asia/Dhaka"                    
+ [37] "Europe/Brussels"                "Africa/Ouagadougou"            
+ [39] "Europe/Sofia"                   "Asia/Bahrain"                  
+ [41] "Africa/Bujumbura"               "Africa/Porto-Novo"             
+ [43] "America/St_Barthelemy"          "Atlantic/Bermuda"              
+ [45] "Asia/Brunei"                    "America/La_Paz"                
+ [47] "America/Kralendijk"             "America/Fortaleza"             
+ [49] "America/Recife"                 "America/Belem"                 
+ [51] "America/Maceio"                 "America/Santarem"              
+ [53] "America/Bahia"                  "America/Manaus"                
+ [55] "America/Araguaina"              "America/Sao_Paulo"             
+ [57] "America/Cuiaba"                 "America/Campo_Grande"          
+ [59] "America/Rio_Branco"             "America/Eirunepe"              
+ [61] "America/Porto_Velho"            "America/Boa_Vista"             
+ [63] "America/Nassau"                 "Asia/Thimphu"                  
+ [65] "Africa/Gaborone"                "Europe/Minsk"                  
+ [67] "America/Belize"                 "America/Vancouver"             
+ [69] "America/Edmonton"               "America/Toronto"               
+ [71] "America/Montreal"               "America/Winnipeg"              
+ [73] "America/Halifax"                "America/St_Johns"              
+ [75] "America/Moncton"                "America/Dawson_Creek"          
+ [77] "America/Glace_Bay"              "America/Regina"                
+ [79] "America/Thunder_Bay"            "America/Whitehorse"            
+ [81] "America/Yellowknife"            "Indian/Cocos"                  
+ [83] "Africa/Lubumbashi"              "Africa/Kinshasa"               
+ [85] "Africa/Bangui"                  "Africa/Brazzaville"            
+ [87] "Europe/Zurich"                  "Africa/Abidjan"                
+ [89] "Pacific/Rarotonga"              "America/Santiago"              
+ [91] "Africa/Douala"                  "Asia/Urumqi"                   
+ [93] "Asia/Chongqing"                 "Asia/Kashgar"                  
+ [95] "Asia/Shanghai"                  "Asia/Harbin"                   
+ [97] "America/Bogota"                 "America/Costa_Rica"            
+ [99] "America/Havana"                 "Atlantic/Cape_Verde"           
+[101] "America/Curacao"                "Indian/Christmas"              
+[103] "Asia/Nicosia"                   "Europe/Prague"                 
+[105] "Europe/Berlin"                  "Africa/Djibouti"               
+[107] "Europe/Copenhagen"              "America/Dominica"              
+[109] "America/Santo_Domingo"          "Africa/Algiers"                
+[111] "America/Guayaquil"              "Europe/Tallinn"                
+[113] "Africa/Cairo"                   "Africa/El_Aaiun"               
+[115] "Africa/Asmara"                  "Europe/Madrid"                 
+[117] "Atlantic/Canary"                "Africa/Ceuta"                  
+[119] "Africa/Addis_Ababa"             "Europe/Helsinki"               
+[121] "Pacific/Fiji"                   "Atlantic/Stanley"              
+[123] "Pacific/Pohnpei"                "Atlantic/Faroe"                
+[125] "Europe/Paris"                   "Africa/Libreville"             
+[127] "Europe/London"                  "America/Grenada"               
+[129] "Asia/Tbilisi"                   "America/Cayenne"               
+[131] "Europe/Guernsey"                "Africa/Accra"                  
+[133] "Europe/Gibraltar"               "America/Godthab"               
+[135] "Africa/Banjul"                  "Africa/Conakry"                
+[137] "America/Guadeloupe"             "Africa/Malabo"                 
+[139] "Europe/Athens"                  "Atlantic/South_Georgia"        
+[141] "America/Guatemala"              "Pacific/Guam"                  
+[143] "Africa/Bissau"                  "America/Guyana"                
+[145] "Asia/Hong_Kong"                 "America/Tegucigalpa"           
+[147] "Europe/Zagreb"                  "America/Port-au-Prince"        
+[149] "Europe/Budapest"                "Asia/Jakarta"                  
+[151] "Asia/Makassar"                  "Asia/Jayapura"                 
+[153] "Asia/Pontianak"                 "Europe/Dublin"                 
+[155] "Asia/Jerusalem"                 "Europe/Isle_of_Man"            
+[157] "Asia/Kolkata"                   "Asia/Baghdad"                  
+[159] "Asia/Tehran"                    "Atlantic/Reykjavik"            
+[161] "Europe/Rome"                    "Europe/Jersey"                 
+[163] "America/Jamaica"                "Asia/Amman"                    
+[165] "Asia/Tokyo"                     "Africa/Nairobi"                
+[167] "Asia/Bishkek"                   "Asia/Phnom_Penh"               
+[169] "Pacific/Tarawa"                 "Indian/Comoro"                 
+[171] "America/St_Kitts"               "Asia/Pyongyang"                
+[173] "Asia/Seoul"                     "Asia/Kuwait"                   
+[175] "America/Cayman"                 "Asia/Oral"                     
+[177] "Asia/Aqtobe"                    "Asia/Almaty"                   
+[179] "Asia/Aqtau"                     "Asia/Qyzylorda"                
+[181] "Asia/Vientiane"                 "Asia/Beirut"                   
+[183] "America/St_Lucia"               "Europe/Vaduz"                  
+[185] "Asia/Colombo"                   "Africa/Monrovia"               
+[187] "Africa/Maseru"                  "Europe/Vilnius"                
+[189] "Europe/Luxembourg"              "Europe/Riga"                   
+[191] "Africa/Tripoli"                 "Africa/Casablanca"             
+[193] "Europe/Monaco"                  "Europe/Chisinau"               
+[195] "Europe/Podgorica"               "America/Marigot"               
+[197] "Indian/Antananarivo"            "Pacific/Majuro"                
+[199] "Europe/Skopje"                  "Africa/Bamako"                 
+[201] "Asia/Rangoon"                   "Asia/Hovd"                     
+[203] "Asia/Ulaanbaatar"               "Asia/Choibalsan"               
+[205] "Asia/Macau"                     "Pacific/Saipan"                
+[207] "America/Martinique"             "Africa/Nouakchott"             
+[209] "America/Montserrat"             "Europe/Malta"                  
+[211] "Indian/Mauritius"               "Indian/Maldives"               
+[213] "Africa/Blantyre"                "America/Monterrey"             
+[215] "America/Mexico_City"            "America/Merida"                
+[217] "America/Matamoros"              "America/Cancun"                
+[219] "America/Hermosillo"             "America/Mazatlan"              
+[221] "America/Tijuana"                "America/Santa_Isabel"          
+[223] "America/Ojinaga"                "America/Chihuahua"             
+[225] "Asia/Kuala_Lumpur"              "Asia/Kuching"                  
+[227] "Africa/Maputo"                  "Africa/Windhoek"               
+[229] "Pacific/Noumea"                 "Africa/Niamey"                 
+[231] "Pacific/Norfolk"                "Africa/Lagos"                  
+[233] "America/Managua"                "Europe/Amsterdam"              
+[235] "Europe/Oslo"                    "Asia/Kathmandu"                
+[237] "Pacific/Niue"                   "Pacific/Auckland"              
+[239] "Asia/Muscat"                    "America/Panama"                
+[241] "America/Lima"                   "Pacific/Tahiti"                
+[243] "Pacific/Port_Moresby"           "Asia/Manila"                   
+[245] "Asia/Karachi"                   "Europe/Warsaw"                 
+[247] "America/Miquelon"               "Pacific/Pitcairn"              
+[249] "America/Puerto_Rico"            "Asia/Gaza"                     
+[251] "Asia/Hebron"                    "Europe/Lisbon"                 
+[253] "Atlantic/Madeira"               "Atlantic/Azores"               
+[255] "Pacific/Palau"                  "America/Asuncion"              
+[257] "Asia/Qatar"                     "Indian/Reunion"                
+[259] "Europe/Bucharest"               "Europe/Belgrade"               
+[261] "Europe/Moscow"                  "Asia/Yekaterinburg"            
+[263] "Europe/Volgograd"               "Europe/Samara"                 
+[265] "Europe/Kaliningrad"             "Asia/Omsk"                     
+[267] "Asia/Novokuznetsk"              "Asia/Krasnoyarsk"              
+[269] "Asia/Novosibirsk"               "Asia/Irkutsk"                  
+[271] "Asia/Yakutsk"                   "Asia/Vladivostok"              
+[273] "Asia/Kamchatka"                 "Asia/Sakhalin"                 
+[275] "Asia/Magadan"                   "Africa/Kigali"                 
+[277] "Asia/Riyadh"                    "Pacific/Guadalcanal"           
+[279] "Indian/Mahe"                    "Africa/Khartoum"               
+[281] "Europe/Stockholm"               "Asia/Singapore"                
+[283] "Atlantic/St_Helena"             "Europe/Ljubljana"              
+[285] "Arctic/Longyearbyen"            "Europe/Bratislava"             
+[287] "Africa/Freetown"                "Europe/San_Marino"             
+[289] "Africa/Dakar"                   "Africa/Mogadishu"              
+[291] "America/Paramaribo"             "Africa/Juba"                   
+[293] "Africa/Sao_Tome"                "America/El_Salvador"           
+[295] "America/Lower_Princes"          "Asia/Damascus"                 
+[297] "Africa/Mbabane"                 "America/Grand_Turk"            
+[299] "Africa/Ndjamena"                "Indian/Kerguelen"              
+[301] "Africa/Lome"                    "Asia/Bangkok"                  
+[303] "Asia/Dushanbe"                  "Asia/Dili"                     
+[305] "Asia/Ashgabat"                  "Africa/Tunis"                  
+[307] "Pacific/Tongatapu"              "Europe/Istanbul"               
+[309] "America/Port_of_Spain"          "Pacific/Funafuti"              
+[311] "Asia/Taipei"                    "Africa/Dar_es_Salaam"          
+[313] "Europe/Kiev"                    "Europe/Zaporozhye"             
+[315] "Europe/Simferopol"              "Europe/Uzhgorod"               
+[317] "Africa/Kampala"                 "America/New_York"              
+[319] "America/Chicago"                "America/Indiana/Indianapolis"  
+[321] "America/Kentucky/Louisville"    "America/Indiana/Vincennes"     
+[323] "America/Detroit"                "America/Los_Angeles"           
+[325] "America/Phoenix"                "America/Denver"                
+[327] "America/Juneau"                 "America/Boise"                 
+[329] "America/North_Dakota/New_Salem" "Pacific/Honolulu"              
+[331] "America/Anchorage"              "America/Montevideo"            
+[333] "Asia/Samarkand"                 "Asia/Tashkent"                 
+[335] "Europe/Vatican"                 "America/St_Vincent"            
+[337] "America/Caracas"                "America/Tortola"               
+[339] "America/St_Thomas"              "Asia/Ho_Chi_Minh"              
+[341] "Pacific/Efate"                  "Pacific/Wallis"                
+[343] "Pacific/Apia"                   "Asia/Aden"                     
+[345] "Indian/Mayotte"                 "Africa/Johannesburg"           
+[347] "Africa/Lusaka"                  "Africa/Harare" 
+
+
