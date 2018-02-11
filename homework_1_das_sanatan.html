@@ -127,196 +127,62 @@ $(document).ready(function () {
 
 
 <p>My Github repository for my assignments can be found at this URL:<a href="https://github.com/sanatanonline/compscix-415-2-assignments" class="uri">https://github.com/sanatanonline/compscix-415-2-assignments</a></p>
-<p>library(mdsr) library(tidyverse)</p>
-<p>“‘{r load_packages, warning=FALSE, message=FALSE}</p>
-<p>data(“WorldCities”)</p>
-<p>glimpse(WorldCities)</p>
+<pre class="r"><code>library(mdsr)
+library(tidyverse)
+data(&quot;WorldCities&quot;)</code></pre>
 <p>QUESTION 1: How many observations and variables are there in this data set? What are some of the variable names? Type up your answer in your document using complete sentences.</p>
-<p>Total observations: 23018 Variable names: $ code <int> 3040051, 3041563, 290594, 291074, 291696, 292223, 292… $ name <chr> “les Escaldes”, “Andorra la Vella”, “Umm al Qaywayn”,… $ latitude <dbl> 42.50729, 42.50779, 25.56473, 25.78953, 25.33132, 25…. $ longitude <dbl> 1.53414, 1.52109, 55.55517, 55.94320, 56.34199, 55.30… $ country <chr> “AD”, “AD”, “AE”, “AE”, “AE”, “AE”, “AE”, “AE”, “AE”,… $ countryRegion <chr> “8”, “7”, “7”, “5”, “6”, “3”, “4”, “6”, “1”, “4”, “1”… $ population <dbl> 15853, 20430, 44411, 115949, 33575, 1137347, 26395, 5… $ regionCode <int> 1033, 1037, 2, 2, 20, 11, 4, 6, 16, 15, 275, 4, 114, … $ region <chr> “Europe/Andorra”, “Europe/Andorra”, “Asia/Dubai”, “As… $ date <chr>”10/15/08“,”5/30/10“,”11/3/12“,”11/30/12“,”11/3/1…</p>
-<p>WorldCities &lt;- head(WorldCities, 200) # 200 rows</p>
-<p>country_col &lt;- WorldCities$country</p>
-<p>unique(country_col)</p>
+<p>ANSWER 1: There are 23018 observations and 10 variables in the data set. The variables are code, name etc. Please see below.</p>
+<pre class="r"><code>glimpse(WorldCities)</code></pre>
+<pre><code>## Observations: 23,018
+## Variables: 10
+## $ code          &lt;int&gt; 3040051, 3041563, 290594, 291074, 291696, 292223...
+## $ name          &lt;chr&gt; &quot;les Escaldes&quot;, &quot;Andorra la Vella&quot;, &quot;Umm al Qayw...
+## $ latitude      &lt;dbl&gt; 42.50729, 42.50779, 25.56473, 25.78953, 25.33132...
+## $ longitude     &lt;dbl&gt; 1.53414, 1.52109, 55.55517, 55.94320, 56.34199, ...
+## $ country       &lt;chr&gt; &quot;AD&quot;, &quot;AD&quot;, &quot;AE&quot;, &quot;AE&quot;, &quot;AE&quot;, &quot;AE&quot;, &quot;AE&quot;, &quot;AE&quot;, ...
+## $ countryRegion &lt;chr&gt; &quot;8&quot;, &quot;7&quot;, &quot;7&quot;, &quot;5&quot;, &quot;6&quot;, &quot;3&quot;, &quot;4&quot;, &quot;6&quot;, &quot;1&quot;, &quot;4&quot;...
+## $ population    &lt;dbl&gt; 15853, 20430, 44411, 115949, 33575, 1137347, 263...
+## $ regionCode    &lt;int&gt; 1033, 1037, 2, 2, 20, 11, 4, 6, 16, 15, 275, 4, ...
+## $ region        &lt;chr&gt; &quot;Europe/Andorra&quot;, &quot;Europe/Andorra&quot;, &quot;Asia/Dubai&quot;...
+## $ date          &lt;chr&gt; &quot;10/15/08&quot;, &quot;5/30/10&quot;, &quot;11/3/12&quot;, &quot;11/30/12&quot;, &quot;1...</code></pre>
+<pre class="r"><code>WorldCities &lt;- head(WorldCities, 200) # 200 rows
+country_col &lt;- WorldCities$country
+unique(country_col)</code></pre>
+<pre><code>## [1] &quot;AD&quot; &quot;AE&quot; &quot;AF&quot; &quot;AG&quot; &quot;AI&quot; &quot;AL&quot; &quot;AM&quot; &quot;AO&quot; &quot;AR&quot;</code></pre>
 <p>QUESTION 2: There is a column called region in the data set. Can you extract this and show only the unique values?</p>
-<p>region = WorldCities$region unique(region)</p>
-<p>[1] “Europe/Andorra” “Asia/Dubai”<br />
-[3] “Asia/Kabul” “America/Antigua”<br />
-[5] “America/Anguilla” “Europe/Tirane”<br />
-[7] “Asia/Yerevan” “Africa/Luanda”<br />
-[9] “America/Argentina/Buenos_Aires” “America/Argentina/Cordoba”<br />
-[11] “America/Argentina/Salta” “America/Argentina/Tucuman”<br />
-[13] “America/Argentina/San_Juan” “America/Argentina/Ushuaia”<br />
-[15] “America/Argentina/Catamarca” “America/Argentina/Jujuy”<br />
-[17] “America/Argentina/Mendoza” “America/Argentina/San_Luis”<br />
-[19] “America/Argentina/Rio_Gallegos” “America/Argentina/La_Rioja”<br />
-[21] “Pacific/Pago_Pago” “Europe/Vienna”<br />
-[23] “Australia/Adelaide” “Australia/Perth”<br />
-[25] “Australia/Brisbane” “Australia/Darwin”<br />
-[27] “Australia/Melbourne” “Australia/Sydney”<br />
-[29] “Australia/Hobart” “Australia/Broken_Hill”<br />
-[31] “America/Aruba” “Europe/Mariehamn”<br />
-[33] “Asia/Baku” “Europe/Sarajevo”<br />
-[35] “America/Barbados” “Asia/Dhaka”<br />
-[37] “Europe/Brussels” “Africa/Ouagadougou”<br />
-[39] “Europe/Sofia” “Asia/Bahrain”<br />
-[41] “Africa/Bujumbura” “Africa/Porto-Novo”<br />
-[43] “America/St_Barthelemy” “Atlantic/Bermuda”<br />
-[45] “Asia/Brunei” “America/La_Paz”<br />
-[47] “America/Kralendijk” “America/Fortaleza”<br />
-[49] “America/Recife” “America/Belem”<br />
-[51] “America/Maceio” “America/Santarem”<br />
-[53] “America/Bahia” “America/Manaus”<br />
-[55] “America/Araguaina” “America/Sao_Paulo”<br />
-[57] “America/Cuiaba” “America/Campo_Grande”<br />
-[59] “America/Rio_Branco” “America/Eirunepe”<br />
-[61] “America/Porto_Velho” “America/Boa_Vista”<br />
-[63] “America/Nassau” “Asia/Thimphu”<br />
-[65] “Africa/Gaborone” “Europe/Minsk”<br />
-[67] “America/Belize” “America/Vancouver”<br />
-[69] “America/Edmonton” “America/Toronto”<br />
-[71] “America/Montreal” “America/Winnipeg”<br />
-[73] “America/Halifax” “America/St_Johns”<br />
-[75] “America/Moncton” “America/Dawson_Creek”<br />
-[77] “America/Glace_Bay” “America/Regina”<br />
-[79] “America/Thunder_Bay” “America/Whitehorse”<br />
-[81] “America/Yellowknife” “Indian/Cocos”<br />
-[83] “Africa/Lubumbashi” “Africa/Kinshasa”<br />
-[85] “Africa/Bangui” “Africa/Brazzaville”<br />
-[87] “Europe/Zurich” “Africa/Abidjan”<br />
-[89] “Pacific/Rarotonga” “America/Santiago”<br />
-[91] “Africa/Douala” “Asia/Urumqi”<br />
-[93] “Asia/Chongqing” “Asia/Kashgar”<br />
-[95] “Asia/Shanghai” “Asia/Harbin”<br />
-[97] “America/Bogota” “America/Costa_Rica”<br />
-[99] “America/Havana” “Atlantic/Cape_Verde”<br />
-[101] “America/Curacao” “Indian/Christmas”<br />
-[103] “Asia/Nicosia” “Europe/Prague”<br />
-[105] “Europe/Berlin” “Africa/Djibouti”<br />
-[107] “Europe/Copenhagen” “America/Dominica”<br />
-[109] “America/Santo_Domingo” “Africa/Algiers”<br />
-[111] “America/Guayaquil” “Europe/Tallinn”<br />
-[113] “Africa/Cairo” “Africa/El_Aaiun”<br />
-[115] “Africa/Asmara” “Europe/Madrid”<br />
-[117] “Atlantic/Canary” “Africa/Ceuta”<br />
-[119] “Africa/Addis_Ababa” “Europe/Helsinki”<br />
-[121] “Pacific/Fiji” “Atlantic/Stanley”<br />
-[123] “Pacific/Pohnpei” “Atlantic/Faroe”<br />
-[125] “Europe/Paris” “Africa/Libreville”<br />
-[127] “Europe/London” “America/Grenada”<br />
-[129] “Asia/Tbilisi” “America/Cayenne”<br />
-[131] “Europe/Guernsey” “Africa/Accra”<br />
-[133] “Europe/Gibraltar” “America/Godthab”<br />
-[135] “Africa/Banjul” “Africa/Conakry”<br />
-[137] “America/Guadeloupe” “Africa/Malabo”<br />
-[139] “Europe/Athens” “Atlantic/South_Georgia”<br />
-[141] “America/Guatemala” “Pacific/Guam”<br />
-[143] “Africa/Bissau” “America/Guyana”<br />
-[145] “Asia/Hong_Kong” “America/Tegucigalpa”<br />
-[147] “Europe/Zagreb” “America/Port-au-Prince”<br />
-[149] “Europe/Budapest” “Asia/Jakarta”<br />
-[151] “Asia/Makassar” “Asia/Jayapura”<br />
-[153] “Asia/Pontianak” “Europe/Dublin”<br />
-[155] “Asia/Jerusalem” “Europe/Isle_of_Man”<br />
-[157] “Asia/Kolkata” “Asia/Baghdad”<br />
-[159] “Asia/Tehran” “Atlantic/Reykjavik”<br />
-[161] “Europe/Rome” “Europe/Jersey”<br />
-[163] “America/Jamaica” “Asia/Amman”<br />
-[165] “Asia/Tokyo” “Africa/Nairobi”<br />
-[167] “Asia/Bishkek” “Asia/Phnom_Penh”<br />
-[169] “Pacific/Tarawa” “Indian/Comoro”<br />
-[171] “America/St_Kitts” “Asia/Pyongyang”<br />
-[173] “Asia/Seoul” “Asia/Kuwait”<br />
-[175] “America/Cayman” “Asia/Oral”<br />
-[177] “Asia/Aqtobe” “Asia/Almaty”<br />
-[179] “Asia/Aqtau” “Asia/Qyzylorda”<br />
-[181] “Asia/Vientiane” “Asia/Beirut”<br />
-[183] “America/St_Lucia” “Europe/Vaduz”<br />
-[185] “Asia/Colombo” “Africa/Monrovia”<br />
-[187] “Africa/Maseru” “Europe/Vilnius”<br />
-[189] “Europe/Luxembourg” “Europe/Riga”<br />
-[191] “Africa/Tripoli” “Africa/Casablanca”<br />
-[193] “Europe/Monaco” “Europe/Chisinau”<br />
-[195] “Europe/Podgorica” “America/Marigot”<br />
-[197] “Indian/Antananarivo” “Pacific/Majuro”<br />
-[199] “Europe/Skopje” “Africa/Bamako”<br />
-[201] “Asia/Rangoon” “Asia/Hovd”<br />
-[203] “Asia/Ulaanbaatar” “Asia/Choibalsan”<br />
-[205] “Asia/Macau” “Pacific/Saipan”<br />
-[207] “America/Martinique” “Africa/Nouakchott”<br />
-[209] “America/Montserrat” “Europe/Malta”<br />
-[211] “Indian/Mauritius” “Indian/Maldives”<br />
-[213] “Africa/Blantyre” “America/Monterrey”<br />
-[215] “America/Mexico_City” “America/Merida”<br />
-[217] “America/Matamoros” “America/Cancun”<br />
-[219] “America/Hermosillo” “America/Mazatlan”<br />
-[221] “America/Tijuana” “America/Santa_Isabel”<br />
-[223] “America/Ojinaga” “America/Chihuahua”<br />
-[225] “Asia/Kuala_Lumpur” “Asia/Kuching”<br />
-[227] “Africa/Maputo” “Africa/Windhoek”<br />
-[229] “Pacific/Noumea” “Africa/Niamey”<br />
-[231] “Pacific/Norfolk” “Africa/Lagos”<br />
-[233] “America/Managua” “Europe/Amsterdam”<br />
-[235] “Europe/Oslo” “Asia/Kathmandu”<br />
-[237] “Pacific/Niue” “Pacific/Auckland”<br />
-[239] “Asia/Muscat” “America/Panama”<br />
-[241] “America/Lima” “Pacific/Tahiti”<br />
-[243] “Pacific/Port_Moresby” “Asia/Manila”<br />
-[245] “Asia/Karachi” “Europe/Warsaw”<br />
-[247] “America/Miquelon” “Pacific/Pitcairn”<br />
-[249] “America/Puerto_Rico” “Asia/Gaza”<br />
-[251] “Asia/Hebron” “Europe/Lisbon”<br />
-[253] “Atlantic/Madeira” “Atlantic/Azores”<br />
-[255] “Pacific/Palau” “America/Asuncion”<br />
-[257] “Asia/Qatar” “Indian/Reunion”<br />
-[259] “Europe/Bucharest” “Europe/Belgrade”<br />
-[261] “Europe/Moscow” “Asia/Yekaterinburg”<br />
-[263] “Europe/Volgograd” “Europe/Samara”<br />
-[265] “Europe/Kaliningrad” “Asia/Omsk”<br />
-[267] “Asia/Novokuznetsk” “Asia/Krasnoyarsk”<br />
-[269] “Asia/Novosibirsk” “Asia/Irkutsk”<br />
-[271] “Asia/Yakutsk” “Asia/Vladivostok”<br />
-[273] “Asia/Kamchatka” “Asia/Sakhalin”<br />
-[275] “Asia/Magadan” “Africa/Kigali”<br />
-[277] “Asia/Riyadh” “Pacific/Guadalcanal”<br />
-[279] “Indian/Mahe” “Africa/Khartoum”<br />
-[281] “Europe/Stockholm” “Asia/Singapore”<br />
-[283] “Atlantic/St_Helena” “Europe/Ljubljana”<br />
-[285] “Arctic/Longyearbyen” “Europe/Bratislava”<br />
-[287] “Africa/Freetown” “Europe/San_Marino”<br />
-[289] “Africa/Dakar” “Africa/Mogadishu”<br />
-[291] “America/Paramaribo” “Africa/Juba”<br />
-[293] “Africa/Sao_Tome” “America/El_Salvador”<br />
-[295] “America/Lower_Princes” “Asia/Damascus”<br />
-[297] “Africa/Mbabane” “America/Grand_Turk”<br />
-[299] “Africa/Ndjamena” “Indian/Kerguelen”<br />
-[301] “Africa/Lome” “Asia/Bangkok”<br />
-[303] “Asia/Dushanbe” “Asia/Dili”<br />
-[305] “Asia/Ashgabat” “Africa/Tunis”<br />
-[307] “Pacific/Tongatapu” “Europe/Istanbul”<br />
-[309] “America/Port_of_Spain” “Pacific/Funafuti”<br />
-[311] “Asia/Taipei” “Africa/Dar_es_Salaam”<br />
-[313] “Europe/Kiev” “Europe/Zaporozhye”<br />
-[315] “Europe/Simferopol” “Europe/Uzhgorod”<br />
-[317] “Africa/Kampala” “America/New_York”<br />
-[319] “America/Chicago” “America/Indiana/Indianapolis”<br />
-[321] “America/Kentucky/Louisville” “America/Indiana/Vincennes”<br />
-[323] “America/Detroit” “America/Los_Angeles”<br />
-[325] “America/Phoenix” “America/Denver”<br />
-[327] “America/Juneau” “America/Boise”<br />
-[329] “America/North_Dakota/New_Salem” “Pacific/Honolulu”<br />
-[331] “America/Anchorage” “America/Montevideo”<br />
-[333] “Asia/Samarkand” “Asia/Tashkent”<br />
-[335] “Europe/Vatican” “America/St_Vincent”<br />
-[337] “America/Caracas” “America/Tortola”<br />
-[339] “America/St_Thomas” “Asia/Ho_Chi_Minh”<br />
-[341] “Pacific/Efate” “Pacific/Wallis”<br />
-[343] “Pacific/Apia” “Asia/Aden”<br />
-[345] “Indian/Mayotte” “Africa/Johannesburg”<br />
-[347] “Africa/Lusaka” “Africa/Harare”</p>
+<p>AnSWER 2:</p>
+<pre class="r"><code>region = WorldCities$region
+unique(region)</code></pre>
+<pre><code>##  [1] &quot;Europe/Andorra&quot;                 &quot;Asia/Dubai&quot;                    
+##  [3] &quot;Asia/Kabul&quot;                     &quot;America/Antigua&quot;               
+##  [5] &quot;America/Anguilla&quot;               &quot;Europe/Tirane&quot;                 
+##  [7] &quot;Asia/Yerevan&quot;                   &quot;Africa/Luanda&quot;                 
+##  [9] &quot;America/Argentina/Buenos_Aires&quot; &quot;America/Argentina/Cordoba&quot;     
+## [11] &quot;America/Argentina/Salta&quot;        &quot;America/Argentina/Tucuman&quot;     
+## [13] &quot;America/Argentina/San_Juan&quot;</code></pre>
 <p>QUESTION 3: Can you extract and show the unique entries from the country column in WorldCities using one line of code and two %&gt;% operators?</p>
-<p>WorldCities %&gt;% select(country) %&gt;% unique()</p>
-<p>WorldCities %&gt;% ggplot(aes(x = population)) + geom_histogram()</p>
+<p>ANSWER 3:</p>
+<pre class="r"><code>WorldCities %&gt;% select(country) %&gt;% unique()</code></pre>
+<pre><code>##     country
+## 1        AD
+## 3        AE
+## 15       AF
+## 65       AG
+## 66       AI
+## 67       AL
+## 87       AM
+## 104      AO
+## 131      AR</code></pre>
 <p>QUESTION 4: Make one more histogram of the population and add a new x-label, a new ylabel, a new title (use ggtitle(‘my title’)), and change the theme of the plot using theme_bw().</p>
-<p>WorldCities %&gt;% ggplot(aes(x = population)) + geom_histogram() + xlab(‘City Population’) + ylab(‘Population Count’) + ggtitle(‘City Population Histogram’) + theme_bw()</p>
+<p>ANSWER 4:</p>
+<pre class="r"><code>WorldCities %&gt;% ggplot(aes(x = population)) +
+geom_histogram() +
+xlab('City Population') + 
+ylab('Population Count') + 
+ggtitle('City Population Histogram') + 
+theme_bw()</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="data:image/png;base64,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" width="672" /></p>
 
 
 
