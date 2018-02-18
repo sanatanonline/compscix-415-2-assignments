@@ -2,7 +2,9 @@
 title: "COMPSCIX 415.2 Homework 3"
 author: "Sanatan Das"
 date: "February 17, 2018"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -14,3 +16,260 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(nycflights13)
 ```
+
+##3.8.1 Exercises
+
+QUESTION 1: What is the problem with this plot? How could you improve it?
+
+```{r var1}
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) + 
+  geom_point()
+```
+
+ANSWER 1: 
+
+In the above plot many of the data points overlap. We can jitter the points by adding some slight random noise, which will improve the overall visualization as below.
+
+```{r var2}
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) + 
+  geom_jitter()
+```
+
+
+QUESTION 2: What parameters to geom_jitter() control the amount of jittering?
+
+ANSWER 2: *width* and *height* are the geom_jitter() parameters to control the amount of jittering (horizontal and vertical)
+
+QUESTION 3: Compare and contrast geom_jitter() with geom_count().
+
+ANSWER 3: geom_count() counts the number of observations at each location rather than adding random noise, then maps the count to point area. It makes larger points the more observations are located at that area, so the number of visible points is equal to geom_point(). Please see the below graphs.
+
+```{r var3}
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) + 
+  geom_jitter()
+```
+
+```{r var4}
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) + 
+  geom_count()
+```
+
+QUESTION 4: What’s the default position adjustment for geom_boxplot()? Create a visualisation of the mpg dataset that demonstrates it.
+
+ANSWER 4: The default position adjustment for geom_boxplot() is position_dodge(). Please see below.
+
+**without position adjustment**
+```{r var5}
+ggplot(data = mpg, mapping = aes(x = class, y = hwy, color = drv)) + 
+  geom_boxplot()
+```
+
+**with position adjustment**
+```{r var6}
+ggplot(data = mpg, mapping = aes(x = class, y = hwy, color = drv)) + 
+  geom_boxplot(position = "dodge")
+```
+
+##3.9.1 Exercises
+
+QUESTION 2: What does labs() do?
+
+ANSWER 2: *labs()* adds labels to the graph. A title, subtitle, a label for the x-axis and y-axis, as well as a caption can be added to a plot using labs().
+
+QUESTION 4: What does the plot below tell you about the relationship between city and highway mpg? 
+Why is  coord_fixed() important? 
+What does geom_abline() do?
+
+```{r var7}
+ggplot(data = mpg, mapping = aes(x = cty, y = hwy)) +
+  geom_point() + 
+  geom_abline() +
+  coord_fixed()
+```
+
+ANSWER 4: In the above plot, the relationship is approximately linear, though overall cars have slightly better highway mileage than city mileage. 
+
+*coord_fixed()* draws equal intervals on the x-axis and y-axis so they are directly comparable. 
+
+*geom_abline()* draws a line that has an intercept of 0 and slope of 1. In the above plot, this tells us that automobile gas efficiency is on average slightly higher for highways than city driving.
+
+##4.4 Exercises
+
+QUESTION 1: Why does this code not work?
+
+*my_variable <- 10*
+*my_varıable*
+#> Error in eval(expr, envir, enclos): object 'my_varıable' not found
+
+ANSWER 2:The second line has a typo. It should be my_variable, not my_varıable.
+
+QUESTION 2: Tweak each of the following R commands so that they run correctly:
+
+*library(tidyverse)*
+
+*ggplot(dota = mpg) + *
+  *geom_point(mapping = aes(x = displ, y = hwy))*
+
+*fliter(mpg, cyl = 8)*
+
+*filter(diamond, carat > 3)*
+
+ANSWER 2: 
+
+```{r var8}
+library(tidyverse)
+
+# incorrect
+# ggplot(dota = mpg) + 
+  # geom_point(mapping = aes(x = displ, y = hwy))
+# Error in structure(list(data = data, layers = list(), scales = scales_list(), : argument "data" is misspelt
+
+# correct
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))
+
+# incorrect
+# fliter(mpg, cyl = 8)
+
+#Error in fliter(mpg, cyl = 8) : could not find function "fliter" Calls: <Anonymous> ... handle -> withCallingHandlers -> withVisible -> eval -> eval Execution halted
+
+# incorrect
+# filter(diamond, carat > 3)
+
+# Error in filter(diamond, carat > 3) : object 'diamond' not found Calls: <Anonymous> ... withCallingHandlers -> withVisible -> eval -> eval -> filter Execution halted
+
+# correct
+filter(mpg, cyl == 8)
+filter(diamonds, carat > 3)
+```
+
+##5.2.4 Exercises
+
+QUESTION 1: Find all flights that
+
+1. Had an arrival delay of two or more hours
+2. Flew to Houston (IAH or HOU)
+3. Were operated by United, American, or Delta
+4. Departed in summer (July, August, and September)
+5. Arrived more than two hours late, but didn’t leave late
+6. Were delayed by at least an hour, but made up over 30 minutes in flight
+7. Departed between midnight and 6am (inclusive)
+
+**1->arrival delay of two or more hours**
+```{r var9}
+filter(flights, arr_delay >= 120)
+```
+
+**2->Flew to Houston (IAH or HOU)**
+```{r var10}
+filter(flights, dest == "IAH" | dest == "HOU")
+```
+
+**3->operated by United, American, or Delta**
+```{r var11}
+filter(flights, carrier == "UA" |
+         carrier == "AA" |
+         carrier == "DL")
+```
+
+**4->Departed in summer (July, August, and September)**
+```{r var12}
+filter(flights, month >= 7, month <= 9)
+```
+
+**5->Arrived more than two hours late, but didn’t leave late**
+```{r var13}
+filter(flights, arr_delay >= 120, dep_delay <= 0)
+```
+
+**6->Were delayed by at least an hour, but made up over 30 minutes in flight**
+```{r var14}
+filter(flights, dep_delay >= 60, dep_delay - arr_delay >= 30)
+```
+
+**7->Departed between midnight and 6am (inclusive)**
+```{r var15}
+filter(flights, dep_time >=0, dep_time <= 600)
+```
+
+QUESTION 2: Another useful dplyr filtering helper is between(). What does it do? Can you use it to simplify the code needed to answer the previous challenges?
+
+ANSWER 2: It is an easy way to find observations between two values. We can use it as below.
+
+**Departed between midnight and 6am (inclusive)**
+```{r var16}
+# without between
+filter(flights, dep_time >=0, dep_time <= 600)
+
+# with between
+filter(flights, between(dep_time, 0, 600))
+```
+
+QUESTION 3: How many flights have a missing dep_time? What other variables are missing? What might these rows represent?
+
+ANSWER 3: 
+
+**flights have a missing dep_time**
+```{r var17}
+filter(flights, is.na(dep_time))
+```
+
+The other variables with missing values are arrival time and departure/arrival delay.
+
+It is most likely these are scheduled flights that never flew.
+
+
+QUESTION 4: Why is NA ^ 0 not missing? Why is NA | TRUE not missing? Why is FALSE & NA not missing? Can you figure out the general rule? (NA * 0 is a tricky counterexample!)
+
+ANSWER 4: 
+
+* *NA ^ 0* - by definition anything to the 0th power is 1.
+
+* *NA | TRUE* - as long as one condition is TRUE, the result is TRUE. By definition, TRUE is TRUE.
+
+* *FALSE & NA* - NA indicates the absence of a value, so the conditional expression ignores it.
+
+* In general, any operation on a missing value becomes a missing value. Hence. NA * 0 is NA. In conditional expressions, missing values are simply ignored.
+
+
+##5.4.1 Exercises
+
+QUESTION 1: Brainstorm as many ways as possible to select dep_time, dep_delay, arr_time, and arr_delay from flights.
+
+ANSWER 1: 
+
+```{r var18}
+select(flights, dep_time, dep_delay, arr_time, arr_delay)
+select(flights, starts_with("dep"), starts_with("arr"))
+select(flights, ends_with("delay"))
+select(flights, contains("delay"))
+```
+
+QUESTION 2: What happens if you include the name of a variable multiple times in a select() call?
+
+ANSWER 2: It is included only a single time in the result data frame even if a variable is included multiple times in a select() call.
+
+QUESTION 3: What does the one_of() function do? Why might it be helpful in conjunction with this vector?
+
+*vars <- c("year", "month", "day", "dep_delay", "arr_delay")*
+
+ANSWER 3: It selects any variable which matches one of the strings in the vector. Please see the example below.
+
+```{r var19}
+vars <- c("year", "month", "day", "dep_delay", "arr_delay")
+select(flights, one_of(vars))
+```
+
+QUESTION 4: Does the result of running the following code surprise you? How do the select helpers deal with case by default? How can you change that default?
+
+```{r var20}
+select(flights, contains("TIME"))
+```
+
+ANSWER 4: By default the select helpers ignore case as in above select() call. To adhere to case, we have to use *ignore.case = FALSE* in the helper function. For example:
+
+```{r var21}
+select(flights, contains("TIME", ignore.case = FALSE))
+```
+
+## END OF HW3 ASSIGNMENT
