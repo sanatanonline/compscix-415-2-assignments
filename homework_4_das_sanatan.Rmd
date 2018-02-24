@@ -1,0 +1,16 @@
+---
+title: "COMPSCIX 415.2 Homework 4"
+author: "Sanatan Das"
+date: "February 24, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load packages
+```{r load_packages, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(nycflights13)
+```
