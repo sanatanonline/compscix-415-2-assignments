@@ -2,7 +2,9 @@
 title: "COMPSCIX 415.2 Homework 4"
 author: "Sanatan Das"
 date: "February 24, 2018"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -14,3 +16,434 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(nycflights13)
 ```
+
+##5.6.7 Exercises
+
+QUESTION 2: Come up with another approach that will give you the same output as not_cancelled %>% count(dest) and not_cancelled %>% count(tailnum, wt = distance) (without using count()).
+
+ANSWER 2: 
+
+```{r var1}
+# collect all the data for not cancelled flights
+not_cancelled <- flights %>% 
+  filter(!is.na(dep_delay), !is.na(arr_delay))
+
+#provided query
+not_cancelled %>% count(dest)
+
+# We can do the same operation without using count() as below. 
+# Explanation: first we do group by by destination column 
+# operation on all not_cancelled flights. 
+# After that we summarize n() on that result.
+not_cancelled %>%
+  group_by(dest) %>%
+  summarize(n = n())
+
+# provided query
+not_cancelled %>%
+  count(tailnum, wt = distance)
+
+# We can do the same operation without using count() as below. 
+# Explanation: First we do a group by by tailnum column 
+# and then summarize on sum of the distance. 
+# NA records are removed.
+not_cancelled %>%
+  group_by(tailnum) %>%
+  summarize(n = sum(distance, na.rm = TRUE))
+
+```
+
+
+QUESTION 4: Look at the number of cancelled flights per day. Is there a pattern? Is the proportion of cancelled flights related to the average delay?
+
+ANSWER 4: 
+
+The above question refers to “per day”, does it mean grouping by day column in the data set or group by calendar day. If it is group by calendar day, it would require grouping by year, month, and day. We will try to analyze both ways.
+
+
+```{r var2}
+# analysis on grouping by day column
+flights %>%
+  filter(is.na(dep_delay)) %>%
+  count(day)
+
+flights %>%
+  group_by(day) %>%
+  summarize(prop_canceled = sum(is.na(dep_delay)) / n(),
+            avg_delay = mean(dep_delay, na.rm = TRUE))
+
+
+# analysis on group by calendar day
+
+canceled_delayed <- 
+  flights %>%
+  mutate(canceled = (is.na(arr_delay) | is.na(dep_delay))) %>%
+  group_by(year, month, day) %>%
+  summarise(prop_canceled = mean(canceled),
+            avg_dep_delay = mean(dep_delay, na.rm = TRUE))
+
+ggplot(canceled_delayed, aes(x = avg_dep_delay, prop_canceled)) +
+  geom_point() +
+  geom_smooth()
+
+```
+
+QUESTION 5: Which carrier has the worst delays? Challenge: can you disentangle the effects of bad airports vs. bad carriers? Why/why not? (Hint: think about flights %>% group_by(carrier, dest) %>% summarise(n()))
+
+ANSWER 5: 
+
+
+```{r var3}
+# worst carrier
+flights %>%
+  group_by(carrier) %>%
+  summarize(mean_delay = mean(arr_delay, na.rm = TRUE)) %>%
+  arrange(desc(mean_delay))
+
+```
+
+From the above result, F9 is the worst carrier.
+
+```{r var4}
+# worst carrier
+flights %>%
+  group_by(carrier) %>%
+  summarize(mean_delay = mean(arr_delay, na.rm = TRUE)) %>%
+  arrange(desc(mean_delay))
+
+# challenge: bad airports vs. bad carriers
+flights %>%
+  group_by(carrier, dest) %>%
+  summarize(mean_delay = mean(arr_delay, na.rm = TRUE)) %>%
+  group_by(carrier) %>%
+  summarize(mean_delay_mad = mad(mean_delay, na.rm = TRUE)) %>%
+  arrange(desc(mean_delay_mad))
+
+```
+
+For the challenge, I calculated the median absolute deviation of average arrival delay by carrier and destination. Higher values indicate a larger spread in the average delays across destinations, meaning these carriers experienced more variation in average delays - for some destinations these carriers experienced longer delays, whereas some destinations arrivals were closer to on time. Lower values mean the carrier experienced similar delays across destinations. It does not mean these carriers were on time. It means tht they were more consistent. Comparing this table to the first table of average arrival delays could disentangle the effect of bad carriers vs. bad airports.
+
+
+QUESTION 6: Which carrier has the worst delays? Challenge: can you disentangle the effects of bad airports vs. bad carriers? Why/why not? (Hint: think about flights %>% group_by(carrier, dest) %>% summarise(n()))
+
+ANSWER 6: What does the sort argument to count() do. When might you use it?
+
+The sort argument will sort the results of count() in descending order of n. We use this if we plan to arrange() the results after completing the count.
+
+
+##10.5 Exercises
+
+QUESTION 1: How can you tell if an object is a tibble? (Hint: try printing mtcars, which is a regular data frame).
+
+ANSWER 1: 
+
+```{r var5}
+# data frame
+print(mtcars)
+
+# tibble
+print(as_tibble(mtcars))
+
+```
+
+A data frame will print the entire contents. A tibble will only print (by default) the first 10 rows and as many columns as will fit in the console.
+
+
+QUESTION 2: Compare and contrast the following operations on a data.frame and equivalent tibble. What is different? Why might the default data frame behaviours cause you frustration?
+
+ANSWER 2: 
+
+**As data frame**
+
+```{r var6}
+# data frame
+df <- data.frame(abc = 1, xyz = "a")
+df$x
+df[, "xyz"]
+df[, c("abc", "xyz")]
+
+```
+
+**As tibble**
+
+```{r var7}
+
+# tibble
+df <- tibble(abc = 1, xyz = "a")
+df$x
+df[, "xyz"]
+df[, c("abc", "xyz")]
+
+```
+
+**Here are two observations:**
+
+* Tibbles never do partial matching; data frames do.
+
+* Subsetting tibbles using [[ will always return a tibble; subsetting data frames using [[ can potentially return a vector.
+
+
+QUESTION 3: If you have the name of a variable stored in an object, e.g. var <- "mpg", how can you extract the reference variable from a tibble?
+
+ANSWER 3: 
+
+```{r var8}
+
+# For an example, let's store hwy in a variable and extract from mpg tibble.
+var <- "hwy"
+mpg[[var]]
+
+```
+
+QUESTION 6: What option controls how many additional column names are printed at the footer of a tibble?
+
+ANSWER 6: 
+*options(tibble.max_extra_cols = n)* is used for that. If the number of columns can not fit in the console, in that case it is useful (googled it).
+
+
+##12.3.3 Exercises
+
+QUESTION 2: Why does this code fail?
+
+*table4a %>%*
+  *gather(1999, 2000, key = "year", value = "cases")*
+
+ANSWER 2: The columns to gather are specified with dplyr::select() style notation. The columns “1999” and “2000” are non-syntactic names (because they don’t start with a letter) so we have to surround them in backticks.The error message is:
+
+Quitting from lines 206-211 (homework_4_das_sanatan.Rmd) 
+Error in inds_combine(.vars, ind_list) : Position must be between 0 and n
+Calls: <Anonymous> ... gather.data.frame -> unname -> <Anonymous> -> inds_combine
+Execution halted
+
+The correct way of doing it as below.
+
+```{r var9}
+
+table4a %>%
+  gather('1999', '2000', key = "year", value = "cases")
+
+
+```
+
+QUESTION 3: Why does spreading this tibble fail? How could you add a new column to fix the problem?
+
+people <- tribble(
+  ~name,             ~key,    ~value,
+  #-----------------|--------|------
+  "Phillip Woods",   "age",       45,
+  "Phillip Woods",   "height",   186,
+  "Phillip Woods",   "age",       50,
+  "Jessica Cordero", "age",       37,
+  "Jessica Cordero", "height",   156
+)
+
+ANSWER 3: 
+
+```{r var10}
+
+people <- tribble(
+  ~name,             ~key,    ~value,
+  #-----------------|--------|------
+  "Phillip Woods",   "age",       45,
+  "Phillip Woods",   "height",   186,
+  "Phillip Woods",   "age",       50,
+  "Jessica Cordero", "age",       37,
+  "Jessica Cordero", "height",   156
+)
+
+# Take a glimpse at people
+
+glimpse(people)
+
+#spread(people, key, value)
+
+```
+
+If we run spread, we see the below error message.
+
+Error: Duplicate identifiers for rows (1, 3)
+Execution halted
+
+Spreading the data frame fails because there are two rows with “age” for “Phillip Woods”. We would need to add another column with an indicator for the number observation it is as below.
+
+```{r var11}
+
+people <- tribble(
+  ~name,             ~key,    ~value, ~obs,
+  #-----------------|--------|------|------
+  "Phillip Woods",   "age",       45, 1,
+  "Phillip Woods",   "height",   186, 1,
+  "Phillip Woods",   "age",       50, 2,
+  "Jessica Cordero", "age",       37, 1,
+  "Jessica Cordero", "height",   156, 1
+)
+
+spread(people, key, value)
+
+```
+
+
+QUESTION 4: Tidy the simple tibble below. Do you need to spread or gather it? What are the variables?
+
+preg <- tribble(
+  ~pregnant, ~male, ~female,
+  "yes",     NA,    10,
+  "no",      20,    12
+)
+
+ANSWER 4: 
+
+We have to gather it. The variables can be:
+
+* pregnant: logical (“yes”, “no”)
+
+* female: logical
+
+* count: integer
+
+
+```{r var12}
+
+
+preg <- tribble(
+  ~pregnant, ~male, ~female,
+  "yes",     NA,    10,
+  "no",      20,    12
+)
+
+gather(preg, sex, count, male, female) %>%
+  mutate(pregnant = pregnant == "yes",
+         female = sex == "female") %>%
+  select(-sex)
+
+```
+
+It makes easier if we convert the pregnant and female from character vectors to logical.
+
+##12.4.3 Exercises
+
+QUESTION 1: What do the extra and fill arguments do in separate()? Experiment with the various options for the following two toy datasets.
+
+tibble(x = c("a,b,c", "d,e,f,g", "h,i,j")) %>% 
+  separate(x, c("one", "two", "three"))
+
+tibble(x = c("a,b,c", "d,e", "f,g,i")) %>% 
+  separate(x, c("one", "two", "three"))
+
+ANSWER 1:
+
+
+
+```{r var13}
+
+tibble(x = c("a,b,c", "d,e,f,g", "h,i,j")) %>% 
+  separate(x, c("one", "two", "three"))
+
+tibble(x = c("a,b,c", "d,e", "f,g,i")) %>% 
+  separate(x, c("one", "two", "three"))
+
+```
+
+**extra**
+
+If sep is a character vector, this controls what happens when there are too many pieces. There are three valid options:
+
+* "warn" (the default): emit a warning and drop extra values.
+
+* "drop": drop any extra values without a warning.
+
+* "merge": only splits at most length(into) times
+
+**fill**	
+
+If sep is a character vector, this controls what happens when there are not enough pieces. There are three valid options:
+
+* "warn" (the default): emit a warning and fill from the right
+
+* "right": fill with missing values on the right
+
+* "left": fill with missing values on the left
+
+
+By default separate drops the extra values with a warning.
+
+
+```{r var14}
+
+tibble(x = c("a,b,c", "d,e,f,g", "h,i,j")) %>% 
+  separate(x, c("one", "two", "three"), extra = "drop")
+
+# This produces the same result as above, dropping extra values, but without the warning.
+
+tibble(x = c("a,b,c", "d,e,f,g", "h,i,j")) %>% 
+  separate(x, c("one", "two", "three"), extra = "merge")
+
+```
+
+In this, the extra values are not split, so "f,g" appears in column three.
+
+In this, one of the entries for column, "d,e", has too few elements. The default for fill is similar to separate; it fills with missing values but emits a warning. In this, row 2 of column “three”, is NA.
+
+```{r var15}
+
+tibble(x = c("a,b,c", "d,e", "f,g,i")) %>% 
+  separate(x, c("one", "two", "three"))
+
+```
+
+Alternative options for fill are "right", to fill with missing values from the right, but without a warning
+
+```{r var16}
+
+tibble(x = c("a,b,c", "d,e", "f,g,i")) %>% 
+  separate(x, c("one", "two", "three"), fill = "right")
+
+```
+
+The option fill = "left" also fills with missing values without a warning, but this time from the left side. Now, column “one” of row 2 will be missing, and the other values in that row are shifted over.
+
+```{r var17}
+
+tibble(x = c("a,b,c", "d,e", "f,g,i")) %>% 
+  separate(x, c("one", "two", "three"), fill = "left")
+
+```
+
+
+QUESTION 2: Both unite() and separate() have a remove argument. What does it do? Why would you set it to FALSE?
+
+ANSWER 2:
+
+**remove argument**	
+
+If TRUE, remove input columns from output data frame.
+
+We would set it to FALSE if we want to create a new variable, but keep the old one.
+
+
+##Additional Questions
+
+**Import baby_names.txt and glimpse it**
+
+```{r var18}
+
+# Read from baby_names.txt file
+baby_names <- read_csv("C:/view/opt/apps/git/R/compscix-415-2-assignments/baby_names.txt")
+
+# glimpse baby_names
+glimpse(baby_names)
+
+# Write to baby_names.rds
+saveRDS(baby_names, "baby_names.rds")
+
+# load baby_names.rds
+new_baby_names = readRDS("C:/view/opt/apps/git/R/compscix-415-2-assignments/baby_names.rds")
+  
+# glimpse new_baby_names
+glimpse(new_baby_names) 
+
+```
+
+## END OF HW4 ASSIGNMENT
+
+
