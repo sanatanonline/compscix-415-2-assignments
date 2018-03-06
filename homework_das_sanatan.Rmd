@@ -1,19 +1,19 @@
 ---
 title: "COMPSCIX 415.2 Homework 5/Midterm"
 author: "Sanatan Das"
-date: "March 1, 2018"
+date: "March 2, 2018"
 header-includes:
   - \usepackage{titling}
   - \pretitle{\begin{center}\LARGE\includegraphics[width=5cm]{logo.png}\\[\bigskipamount]}
   - \posttitle{\end{center}}
 output:
-  pdf_document:
-    toc: yes
-    toc_depth: '2'
   html_document:
     number_sections: yes
     toc: yes
     toc_depth: 2
+  pdf_document:
+    toc: yes
+    toc_depth: '2'
 ---
 
 \newpage
@@ -24,18 +24,14 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Code and Documents Git Repository
 
-All the work can be found in the below Git repository location:
-
 https://github.com/sanatanonline/compscix-415-2-assignments
 
-
-# Load packages (prerequisites to run the code in this document)
+# Load packages (prerequisites)
 ```{r load_packages, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(nycflights13)
 library(dplyr)
 ```
-
 
 # RStudio and R Markdown (3 points)
 
@@ -43,7 +39,7 @@ library(dplyr)
 
 **Answer**
 
-The following is the code used for markdown header and to add a table of contents in the document.
+The following is the code used for RMD header and to add a table of contents in the document.
 
 ```{r header, eval=FALSE, echo=TRUE}
 title: "COMPSCIX 415.2 Homework 5/Midterm"
@@ -79,9 +75,9 @@ The below are the packages associated with each task below.
 
 * Plotting - Plotting is done mainly using *ggplot2* package which is a core member of *tidyverse* package.
    
-* Data munging/wrangling - This mainly uses base R packages, *tibble* (which is a core member of *tidyverse* package) and *dplyr* package. We have used the datasets from *nycflights13* package.
+* Data munging/wrangling - This mainly uses base R packages, *tibble* (which is a core member of *tidyverse* package). We have used the datasets from *nycflights13* package.
    
-* Reshaping (speading and gathering) data - Reshaping of data is done using the functions of base R, *tibble* (which is a core member of *tidyverse* package) and *tidyr* packages.
+* Reshaping (speading and gathering) data - Reshaping of data is done using the functions of base R, *tibble* (which is a core member of *tidyverse* package) and *dplyr* packages.
    
 * Importing/exporting data - Import and export of data mainly uses the functions of *readR* package which is a core member of *tidyverse* package.
    
@@ -100,13 +96,13 @@ The below are the packages associated with each task below.
 
 The following are functions used from the packages listed above for the tasks.
 
-* Plotting - *geom_point()* and *geom_smooth()*
+* Plotting -
 
-* Data munging/wrangling - *filter()* and *arrange()*
+* Data munging/wrangling -
 
-* Reshaping data - *spread()* and *gather()*
+* Reshaping data -
 
-* Importing/exporting data (note that readRDS and saveRDS are base R functions) - *read_csv()* and *write_csv()*
+* Importing/exporting data (note that readRDS and saveRDS are base R functions) -
 
 
 # R Basics (1.5 points)
@@ -125,9 +121,9 @@ My_data.name___is.too00ooLong <- c( 1 , 2 , 3 )
 My_data.name___is.too00ooLong
 ```
 
-**Explanation:** '!' is not allowed in a variable name. If the code is executed, R gives the below error:
-
+Explanation: '!' is not allowed in a variable name. If the code is executed, R gives the below error.
 Error: unexpected '!' in "My_data.name___is.too00ooLong!"
+
 
 
 **2. Fix this code so it works:**
@@ -143,7 +139,8 @@ There are two issues in the above code.
 * my_string <- C(, in this code "C" is in uppercase whereas it should be lowercase. R is case sensitive.
 * The last element is not enslosed by quote. So R can not parse it and throws parse error.
 
-The correct code should be as below:
+The correct code is as below.
+
 
 ```{r var4, eval=TRUE, echo=TRUE}
 my_string <- c('has', 'an', 'error', 'in', 'it')
@@ -159,7 +156,7 @@ my_vector
 
 **Answer**
 
-In R, a vector is a sequence of data elements of the same basic type. So it automatically converts the numbers to character String and displays enclosed in double quotes.
+A vector is a sequence of data elements of the same basic type in R. So it automatically converts the numbers to character String.
 
 
 # Data import/export (3 points)
@@ -195,73 +192,55 @@ glimpse(rail_trail)
 saveRDS(rail_trail, "rail_trail.rds")
 
 # load rail_trail.rds
-rail_trail2 = readRDS("C:/view/opt/apps/git/R/compscix-415-2-assignments/rail_trail.rds")
+new_rail_trail = readRDS("C:/view/opt/apps/git/R/compscix-415-2-assignments/rail_trail.rds")
   
-# glimpse rail_trail
-glimpse(rail_trail2) 
+# glimpse new_rail_trail
+glimpse(new_rail_trail) 
 
 ```
-
 
 # Visualization (6 points)
 
 **1. Critique this graphic: give only three examples of what is wrong with this graphic. Be concise.**
 
-Note: Please refer to the below link for the above mentioned graphic.
-
-https://github.com/sanatanonline/compscix-415-2-assignments/blob/master/compscix4152_hw_5.pdf
-
 **Answer**
 
-This graphic has multiple issues which creates wrong impressions of the data visualization. The major three wrong representations are:
+This graphic has multiple issues which creates wrong impressions of the data. The major three wrong representations are:
 
-* This is not a standard statistical chart/plot representation (is it a bubble chart?). The numeric values definitely does not match the size of the images.
+* This is not a standard statistical chart/plot representation. The numeric values definitely does not match the size of the images.
 
-* What are those numbers represents? Are they percentage/total number of responders or what...not clear.
+* What are those numbers represents? Are percentage/total number of responders or what...not clear.
 
 * What are those colors represent? No legend. Not clear.
 
 **2. Reproduce this graphic using the diamonds data set.**
 
-Note: Please refer to the below link for the above mentioned graphic.
-
-https://github.com/sanatanonline/compscix-415-2-assignments/blob/master/compscix4152_hw_5.pdf
-
 **Answer**
 
-```{r var8, eval=TRUE, echo=TRUE}
+```{r var22, eval=FALSE, echo=TRUE}
 
-ggplot(data = diamonds, aes(x = cut, y = carat, fill = color)) +
-  geom_boxplot() +
-  coord_flip() +
-  labs(x="CUT OF THE DIAMOND", y="CARAT OF THE DIAMOND")
+mutate(diamonds, price_per_carat <- price / carat)
+
+ggplot(data = diamonds) +
+  geom_boxplot(aes(x = cut, y = carat, fill = color)) +
+  coord_flip()
 
 ```
 
-I think the box plot will be like above. But I am not sure how to get them overlapped.
+
 
 **3. The previous graphic is not very useful. We can make it much more useful by changing one thing about it. Make the change and plot it again.**
 
 **Answer**
 
-The graphic is not very useful because the box plots are overlapped. We can make it useful by making the below change:
-
-```{r var9, eval=TRUE, echo=TRUE}
-
-ggplot(data = diamonds, aes(x = cut, y = carat, fill = color)) +
-  geom_boxplot() +
-  facet_wrap(~color) + 
-  labs(x="CUT OF THE DIAMOND", y="CARAT OF THE DIAMOND")
-
-```
+Write it.
 
 
 # Data munging and wrangling (6 points)
 
-
 **1. Is this data “tidy”? If yes, leave it alone and go to the next problem. If no, make it tidy. Note: this data set is called table2 and is available in the tidyverse package. It should be ready for you to use after you’ve loaded the tidyverse package.**
 
-```{r var10, eval=TRUE, echo=TRUE}
+```{r var8, eval=TRUE, echo=TRUE}
 table2
 
 ```
@@ -272,21 +251,22 @@ This is not a tidy data. This datast intermingles the values of population and c
 
 The *key* column contains only keys (and not just because the column is labelled *key*). Conveniently, the *value* column contains the values associated with those keys.
 
-We can use the *spread()* function to tidy this layout. So the tidy form of the dataset would be like below:
+We can use the *spread()* function to tidy this layout. So the tidy form of the dataset would be like below.
 
-```{r var11, eval=TRUE, echo=TRUE}
+```{r var20, eval=TRUE, echo=TRUE}
 spread(table2, type, count)
 ```
 
 **2. Create a new column in the diamonds data set called price_per_carat that shows the price of each diamond per carat (hint: divide). Only show me the code, not the output.**
 
-We can do this using the code below:
+We can do this using code below.
 
-```{r var12, eval=FALSE, echo=TRUE}
+```{r var21, eval=FALSE, echo=TRUE}
 
 mutate(diamonds, price_per_carat <- price / carat)
 
 ```
+
 
 **3. For each cut of diamond in the diamonds data set, how many diamonds, and what proportion, have a price > 10000 and a carat < 1.5? There are several ways to get to an answer, but your solution must use the data wrangling verbs from the tidyverse in order to get credit.**
 
@@ -296,7 +276,7 @@ mutate(diamonds, price_per_carat <- price / carat)
 
 **Answer**
 
-```{r var13, eval=TRUE, echo=TRUE}
+```{r var22, eval=TRUE, echo=TRUE}
 
 filter(diamonds, price > 10000, carat < 1.5)
 
@@ -309,10 +289,7 @@ print(tbl_df(diamonds2))
 
 ```
 
-This table shows almost the whole proportion of each cut have price more than 10000 when carat < 1.5? Confusing.
-
 # EDA (6 points)
-
 
 **Take a look at the txhousing data set that is included with the ggplot2 package and answer these questions:**
 
@@ -337,9 +314,9 @@ This table shows almost the whole proportion of each cut have price more than 10
 
 **Answer**
 
-To do the EDA on *txhousing* data, first we take a quick look at the dataset. We can use ?txhousing for help to understand the variabls.
+To do the EDA on *txhousing* data, take a quick look at the table. We can use ?txhousing for help to understand the variabls.
 
-```{r var14, eval=TRUE, echo=TRUE}
+```{r var9, eval=TRUE, echo=TRUE}
 txhousing
 ```
 
@@ -347,7 +324,7 @@ From the above result, we see its a dataset of 9 variables with 8602 observation
 
 **1. During what time period is this data from?**
 
-```{r var15, eval=TRUE, echo=TRUE}
+```{r var10, eval=TRUE, echo=TRUE}
 
 arrange(txhousing, year, month)
 
@@ -359,7 +336,8 @@ From the above results, we see that the data is collected monthly from Jan 2000 
 
 **2. How many cities are represented?**
 
-```{r var16, eval=TRUE, echo=TRUE}
+
+```{r var11, eval=TRUE, echo=TRUE}
 
 count(unique(txhousing[,1]))
 
@@ -371,17 +349,17 @@ There are 46 cities represented in *txhousing* dataset.
 
 In this dataset *sales* variable represents the **number of sales.** So we arrange the dataset in descending order by sales.
 
-```{r var17, eval=TRUE, echo=TRUE}
+```{r var12, eval=TRUE, echo=TRUE}
 
 arrange(txhousing, desc(sales))
 
 ```
 
-In the above result we see, Houston had the highest number of sales 8945 in July (month 7), 2015. This city had maximum volume (total value of sales) too.
+In the above result we see, Houston had the highest number of sales 8945 in July (month 7), 2015. This had maximum volume (total value of sales) too.
 
 **4. What kind of relationship do you think exists between the number of listings and the number of sales? Check your assumption and show your work.**
 
-```{r var18, eval=TRUE, echo=TRUE}
+```{r var13, eval=TRUE, echo=TRUE}
 
 ggplot(data = txhousing) + 
   geom_point(mapping = aes(x = listings, y = sales))
@@ -390,7 +368,7 @@ ggplot(data = txhousing) +
 
 In the above scatter plot we see that there is a relationship between the number of listings and the number of sales. When there is more number of listings, number of sales increases. The below plot confirms the trend.
 
-```{r var19, eval=TRUE, echo=TRUE}
+```{r var14, eval=TRUE, echo=TRUE}
 
 ggplot(data = txhousing) + 
   geom_smooth(mapping = aes(x = listings, y = sales))
@@ -401,17 +379,17 @@ ggplot(data = txhousing) +
 
 We can find out the proportion of sales is missing for each city using following code.
 
-```{r var20, eval=TRUE, echo=TRUE}
+```{r var15, eval=TRUE, echo=TRUE}
 
 missing_sales_prop_per_city <- txhousing %>%
   group_by(city) %>%
   summarise(prop = sum(is.na(sales))/ n()) %>%
   arrange(city)
 
-# we have to print 46 rows for 46 cities
 print(tbl_df(missing_sales_prop_per_city), n=46)
 
 ```
+
 
 **6. Looking at only the cities and months with greater than 500 sales:**
 
@@ -423,7 +401,7 @@ print(tbl_df(missing_sales_prop_per_city), n=46)
 
 First filter out the months with less than or equal to 500 as we are going to look at only the cities and months with greater than 500 sales.
 
-```{r var21, eval=TRUE, echo=TRUE}
+```{r var16, eval=TRUE, echo=TRUE}
 
 newtxhousing <- filter(txhousing, sales > 500)
 
@@ -434,7 +412,7 @@ newtxhousing
 
 And we see there are such 1883 records.
 
-```{r var22, eval=TRUE, echo=TRUE}
+```{r var17, eval=TRUE, echo=TRUE}
 
 ggplot(newtxhousing, aes(date, median)) + 
   geom_line(aes(group = city), alpha = 1/2) +
@@ -444,7 +422,8 @@ ggplot(newtxhousing, aes(date, median)) +
 
 Looking at the above plot, we can see the some of the cities (I guess big cities like Houston) has more sales than other cities.
 
-```{r var23, eval=TRUE, echo=TRUE}
+
+```{r var18, eval=TRUE, echo=TRUE}
 
 #OutVals = boxplot(newtxhousing$sales)$out
 #which(newtxhousing %in% OutVals)
@@ -463,22 +442,23 @@ filter(newtxhousing, newtxhousing$median %in% OutVals[1])
 
 First lets see the records having sales less than 500.
 
-```{r var24, eval=TRUE, echo=TRUE}
+```{r var19, eval=TRUE, echo=TRUE}
 
-txhousing2 <- filter(txhousing, sales < 500)
+newtxhousing <- filter(txhousing, sales < 500)
 
-ggplot(data = txhousing2) + 
-  geom_smooth(mapping = aes(x = txhousing2$year, y = txhousing2$sales))
+ggplot(data = newtxhousing) + 
+  geom_smooth(mapping = aes(x = newtxhousing$year, y = newtxhousing$sales))
+
 
 ```
 
-There is no much change for the records having sales less than 500.
+
 
 
 # Git and Github (1.5 points)
 
-
 **To demonstrate your use of git and Github, at the top of your document put a hyperlink to your Github repository.**
+
 
 **Answer**
 
@@ -491,3 +471,9 @@ https://github.com/sanatanonline/compscix-415-2-assignments
 
 
 \center __End of Homework 5/Midterm__ \center
+
+
+
+
+
+   
