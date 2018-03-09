@@ -1,0 +1,15 @@
+---
+title: "COMPSCIX 415.2 Homework 6"
+author: "Sanatan Das"
+date: "March 9, 2018"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
