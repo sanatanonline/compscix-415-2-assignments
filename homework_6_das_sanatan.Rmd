@@ -3,13 +3,381 @@ title: "COMPSCIX 415.2 Homework 6"
 author: "Sanatan Das"
 date: "March 9, 2018"
 output:
-  pdf_document: default
-  html_document: default
+  pdf_document:
+    toc: yes
+  html_document:
+    number_sections: yes
+    toc: yes
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+\newpage
+
+
+# Code and Documents Git Repository
+
+All the work can be found in the below Git repository location:
+
+https://github.com/sanatanonline/compscix-415-2-assignments
+
+
+# Load packages (prerequisites to run the code in this document)
+```{r load_packages, warning=FALSE, message=FALSE}
+library(mosaicData)
+library(tidyverse)
+```
+
+
+# Analysis of Whickham dataset
+
+Load the Whickham dataset (data(Whickham)). You will need to load the mosaicData package first, but
+I also included the data as an rds file on Canvas if you would rather download it there and load it with
+readRDS().
+
+Look at the help file on this dataset to learn a bit about it.
+
+1. What variables are in this data set?
+
+2. How many observations are there and what does each represent?
+
+3. Create a table (use the R code below as a guide) and a visualization of the relationship between smoking status and outcome, ignoring age. What do you see? Does it make sense?
+
+```{r var1, eval=FALSE, echo=TRUE}
+
+library(mosaicData)
+library(tidyverse)
+Whickham %>% count( _________ , _________ )
+
+```
+
+4. Recode the age variable into an ordered factor with three categories: age <= 44, age > 44 & age <=
+64, and age > 64. Now, recreate visualization from above, but facet on your new age factor. What do
+you see? Does it make sense?
+
+**Answer**
+
+```{r var2, eval=TRUE, echo=TRUE}
+
+# load Whickham.rds
+whickham = readRDS("C:/view/opt/apps/git/R/compscix-415-2-assignments/Whickham.rds")
+  
+# glimpse whickham
+glimpse(whickham) 
+
+```
+
+1. There are three variables in the dataset: *outcome, smoker, age*.
+
+2. This dataset has total 1314 observations. Each observation represents the survival status (Alive/Dead) of smoker or non-smoker women with some particular age in years.
+
+* **outcome** survival status: a factor with levels Alive or Dead
+
+* **smoker** smoking status at baseline: a factor with levels No or Yes
+
+* **age** age (in years)
+
+3. Here is the relationship between smoking status and outcome. 
+
+
+```{r var3, eval=TRUE, echo=TRUE}
+
+Whickham %>% count( smoker , outcome)
+
+```
+
+Let's plot a bar graph on above data.
+
+
+```{r var4, eval=TRUE, echo=TRUE}
+
+Whickham %>% 
+  count( smoker , outcome) %>% 
+  ggplot() + 
+  geom_bar(aes(x = smoker, y = n, fill = outcome), stat = 'identity', position = 'dodge') +
+  theme_bw()
+
+```
+
+It looks like smoking status has not much impact on the outcome. Even more women died although they did not smoke.
+
+4. Let's recode the age variable with three categories: age <= 44, 44 < age <= 64, and age > 64 and plot again.
+
+```{r var5, eval=TRUE, echo=TRUE}
+
+Whickham %>% 
+  mutate(age_cat = case_when(age <= 44 ~ 'below 44',
+                           age > 44 & age <= 64 ~ 'between 44 and 64',
+                           age > 64 ~ 'above 64')) %>% 
+  count( smoker , outcome, age_cat) -> whickham_categorized
+
+# Print the categorized table
+arrange(whickham_categorized, desc(age_cat))
+
+whickham_categorized %>% 
+  ggplot() + 
+  geom_bar(aes(x = smoker, y = n, fill = outcome), stat = 'identity', position = 'dodge') +
+  facet_wrap(~ age_cat) +
+  theme_bw()
+
+```
+
+Now, we see that the death rate is more for the age category between 44 and 64 compared to other two actegories. At the same time, above 64 category, the death count is higher even for non-smokers.
+
+
+# Analysis of The Gamma Distribution
+
+The Central Limit Theorem states that the sampling distribution of sample means is approximately Normal,
+regardless of the distribution of your population. For this exercise our population distribution will be a
+Gamma(1,2) distribution, and we’ll show that the sampling distribution of the mean is in fact normally
+distributed.
+
+1. Generate a random sample of size n = 10000 from a gamma(1,2) distribution and plot a histogram or
+density curve. Use the code below to help you get your sample.
+
+```{r var6, eval=FALSE, echo=TRUE}
+
+n <- 10000
+# look at ?rgamma to read about this function
+gamma_samp <- tibble(x = rgamma(n, shape = 1, scale = 2))
+
+```
+
+**Answer**
+
+Let's plot the graph.
+
+```{r var7, eval=TRUE, echo=TRUE}
+
+n <- 10000
+# look at ?rgamma to read about this function
+gamma_samp <- tibble(x = rgamma(n, shape = 1, scale = 2))
+
+# Histogram
+ggplot(data=gamma_samp) +
+  geom_histogram(aes(x = x), binwidth = 0.5) +
+  theme_bw()
+
+# Density curve
+ggplot(data=gamma_samp) +
+  geom_density(aes(x = x)) +
+  theme_bw()
+
+```
+
+2. What is the mean and standard deviation of your sample? They should both be close to 2 because for
+a gamma distribution:
+mean = shape x scale
+variance = shape x scaleˆ2
+
+```{r var8, eval=FALSE, echo=TRUE}
+
+mean_samp <- gamma_samp %>% .[['x']] %>% mean()
+
+```
+
+**Answer**
+
+```{r var9, eval=TRUE, echo=TRUE}
+
+n <- 10000
+gamma_samp <- tibble(x = rgamma(n, shape = 1, scale = 2))
+
+mean_samp <- gamma_samp %>% .[['x']] %>% mean()
+mean_samp
+
+sd_samp <- gamma_samp %>% .[['x']] %>% sd()
+sd_samp
+
+```
+
+True, both mean and standard deviation are close to 2.
+
+3. Pretend the distribution of our population of data looks like the plot above. Now take a sample of
+size n = 30 from a Gamma(1,2) distribution, plot the histogram or density curve, and calculate the
+mean and standard deviation.
+
+**Answer**
+
+```{r var10, eval=TRUE, echo=TRUE}
+
+n <- 30
+gamma_samp <- tibble(x = rgamma(n, shape = 1, scale = 2))
+
+ggplot(data=gamma_samp) +
+  geom_histogram(aes(x = x), binwidth = 1) +
+  theme_bw()
+
+ggplot(data=gamma_samp) +
+  geom_density(aes(x = x)) +
+  theme_bw()
+
+mean_samp <- gamma_samp %>% .[['x']] %>% mean()
+mean_samp
+
+sd_samp <- gamma_samp %>% .[['x']] %>% sd()
+sd_samp
+
+```
+
+
+4. Take a sample of size n = 30, again from the Gamma(1,2) distribution, calculate the mean, and assign
+it to a vector named mean_samp. Repeat this 10000 times!!!! The code below might help.
+
+```{r var11, eval=FALSE, echo=TRUE}
+
+# create a vector with 10000 NAs
+mean_samp <- rep(NA, 10000)
+
+# start a loop
+for(i in 1:10000) {
+g_samp <- rgamma(30, shape = 1, scale = 2)
+mean_samp[i] <- mean(g_samp)
+}
+
+#Convert vector to a tibble
+mean_samp <- tibble(mean_samp)
+
+```
+
+**Answer**
+
+Let's execute the code.
+
+```{r var12, eval=TRUE, echo=TRUE}
+
+# create a vector with 10000 NAs
+mean_samp <- rep(NA, 10000)
+
+# start a loop
+for(i in 1:10000) {
+g_samp <- rgamma(30, shape = 1, scale = 2)
+mean_samp[i] <- mean(g_samp)
+}
+
+#Convert vector to a tibble
+mean_samp <- tibble(mean_samp)
+
+mean_samp
+
+```
+
+5. Make a histogram of your collection of means from above (mean_samp).
+
+**Answer**
+
+```{r var13, eval=TRUE, echo=TRUE}
+
+# create a vector with 10000 NAs
+mean_samp <- rep(NA, 10000)
+
+# start a loop
+for(i in 1:10000) {
+g_samp <- rgamma(30, shape = 1, scale = 2)
+mean_samp[i] <- mean(g_samp)
+}
+
+#Convert vector to a tibble
+mean_samp <- tibble(mean_samp)
+
+ggplot(data=mean_samp) +
+  geom_histogram(aes(x = mean_samp), binwidth = 0.1) +
+  theme_bw()
+
+ggplot(data=mean_samp) +
+  geom_density(aes(x = mean_samp)) +
+  theme_bw()
+
+```
+
+6. Calculate the mean and standard deviation of all of your sample means.
+
+**Answer**
+
+```{r var14, eval=TRUE, echo=TRUE}
+
+# create a vector with 10000 NAs
+mean_samp <- rep(NA, 10000)
+
+# start a loop
+for(i in 1:10000) {
+g_samp <- rgamma(30, shape = 1, scale = 2)
+mean_samp[i] <- mean(g_samp)
+}
+
+mean_of_mean_samp <- mean(mean_samp)
+mean_of_mean_samp
+
+sd_of_mean_samp <- sd(mean_samp)
+sd_of_mean_samp
+
+```
+
+7. Did anything surprise you about your answers to #6?
+
+**Answer**
+
+Yes, when we took a 10000 mean and calculated mean and standard deviation, mean remain same (~2) but standard deviation decreases (makes sense).
+
+8. According to the Central Limit Theorem, the mean of your sampling distribution should be very close
+to 2, and the standard deviation of your sampling distribution should be close to 0.365.
+Repeat #4-#6, but now with a sample of size n = 300 instead. Do your results match up well with the
+theorem?
+
+**Answer**
+
+Let's find the mean and standard deviation for n=300
+
+```{r var15, eval=TRUE, echo=TRUE}
+
+# create a vector with 10000 NAs
+mean_samp <- rep(NA, 10000)
+
+# start a loop
+for(i in 1:10000) {
+g_samp <- rgamma(300, shape = 1, scale = 2)
+mean_samp[i] <- mean(g_samp)
+}
+
+mean_of_mean_samp <- mean(mean_samp)
+mean_of_mean_samp
+
+sd_of_mean_samp <- sd(mean_samp)
+sd_of_mean_samp
+
+```
+
+I see the mean remains same ~2 but the statndard deviation is decreasing. Let me take sample size n=3000.
+
+
+n=3000
+
+```{r var16, eval=TRUE, echo=TRUE}
+
+# create a vector with 10000 NAs
+mean_samp <- rep(NA, 10000)
+
+# start a loop
+for(i in 1:10000) {
+g_samp <- rgamma(3000, shape = 1, scale = 2)
+mean_samp[i] <- mean(g_samp)
+}
+
+mean_of_mean_samp <- mean(mean_samp)
+mean_of_mean_samp
+
+sd_of_mean_samp <- sd(mean_samp)
+sd_of_mean_samp
+
+```
+
+We see standard deviation decreases.
+
+ \center --------------------------------------------------------------------------------------------------------- \center
+
+
+\center __End of Homework 6__ \center
+
 
