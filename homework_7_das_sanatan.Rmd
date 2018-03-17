@@ -1,0 +1,47 @@
+---
+title: "COMPSCIX 415.2 Homework 7"
+author: "Sanatan Das"
+date: "March 17, 2018"
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Code and Documents Git Repository
+
+All the work can be found in the below Git repository location:
+
+https://github.com/sanatanonline/compscix-415-2-assignments
+
+
+# Load packages (prerequisites to run the code in this document)
+```{r load_packages, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(broom)
+```
+
+**Exercise 1**
+
+**Load the train.csv dataset into R. How many observations and columns are there?**
+
+```{r var1}
+
+# Read from train.csv file
+house_pricing <- read_csv("C:/view/opt/apps/git/R/compscix-415-2-assignments/train.csv")
+
+# glimpse house_pricing
+glimpse(house_pricing)
+
+```
+
+So there are 1460 observations with 81 columns (variables)
+
+
+
