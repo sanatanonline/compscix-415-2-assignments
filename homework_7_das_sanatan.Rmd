@@ -13,6 +13,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+\newpage
 
 # Code and Documents Git Repository
 
@@ -27,21 +28,311 @@ library(tidyverse)
 library(broom)
 ```
 
+# Analysis of Ames Housing dataset and predicting the price
+
 **Exercise 1**
 
 **Load the train.csv dataset into R. How many observations and columns are there?**
 
-```{r var1}
+**Answer**
+
+```{r var1, eval=TRUE, echo=TRUE}
 
 # Read from train.csv file
-house_pricing <- read_csv("C:/view/opt/apps/git/R/compscix-415-2-assignments/train.csv")
+train <- read_csv("C:/view/opt/apps/git/R/compscix-415-2-assignments/train.csv")
 
-# glimpse house_pricing
-glimpse(house_pricing)
+# glimpse train
+glimpse(train)
 
 ```
 
 So there are 1460 observations with 81 columns (variables)
+
+
+**Exercise 2**
+
+**Normally at this point you would spend a few days on EDA, but for this homework we will get right to fitting some linear regression models. Our first step is to randomly split the data into train and test datasets. We will use a 70/30 split. There is an R package that will do the split for you, but let’s get some more practice with R and do it ourselves by filling in the blanks in the code below.**
+
+```{r var2, eval=FALSE, echo=TRUE}
+
+# load packages
+library(tidyverse)
+library(broom)
+# When taking a random sample, it is often useful to set a seed so that
+# your work is reproducible. Setting a seed will guarantee that the same
+# random sample will be generated every time, so long as you always set the
+# same seed beforehand
+set.seed(29283)
+# This data already has an Id column which we can make use of.
+# Let's create our training set using sample_frac. Fill in the blank.
+train_set <- train %>% sample_frac(____)
+# let's create our testing set using the Id column. Fill in the blanks.
+test_set <- train %>% filter(!(____ %in% ____$Id)) 
+
+```
+
+**Answer**
+
+Let's fill in the blanks.
+
+```{r var3, eval=TRUE, echo=TRUE}
+
+# When taking a random sample, it is often useful to set a seed so that
+# your work is reproducible. Setting a seed will guarantee that the same
+# random sample will be generated every time, so long as you always set the
+# same seed beforehand
+set.seed(29283)
+# This data already has an Id column which we can make use of.
+# Let's create our training set using sample_frac. Fill in the blank.
+train_set <- train %>% sample_frac(0.7)
+# Print train set
+train_set
+# let's create our testing set using the Id column. Fill in the blanks.
+test_set <- train %>% filter(!(train$Id %in% train_set$Id))
+# Print test set
+test_set
+
+```
+
+Now, we have separated our train data set and test data set.
+
+**Exercise 3**
+
+**Our target is called SalePrice. First, we can fit a simple regression model consisting of only the intercept (the average of SalePrice). Fit the model and then use the broom package to**
+
+* **take a look at the coefficient,**
+* **compare the coefficient to the average value of SalePrice, and**
+* **take a look at the R-squared.**
+
+**Use the code below and fill in the blanks.**
+
+```{r var4, eval=FALSE, echo=TRUE}
+
+# Fit a model with intercept only
+mod_0 <- lm(SalePrice ~ 1, data = _____)
+# Double-check that the average SalePrice is equal to our model's coefficient
+mean(train_set$SalePrice)
+tidy(____)
+# Check the R-squared
+glance(____)
+
+```
+
+**Answer**
+
+Let's fill in the blanks.
+
+```{r var5, eval=TRUE, echo=TRUE}
+
+# Fit a model with intercept only
+mod_0 <- lm(SalePrice ~ 1, data = train_set)
+# Double-check that the average SalePrice is equal to our model's coefficient
+mean(train_set$SalePrice)
+tidy(mod_0)
+# Check the R-squared
+glance(mod_0)
+
+```
+
+**Exercise 4**
+
+**Now fit a linear regression model using GrLivArea, OverallQual, and Neighborhood as the features. Don’t forget to look at data_description.txt to understand what these variables mean. Ask yourself these questions before fitting the model:**
+
+* **What kind of relationship will these features have with our target?**
+* **Can the relationship be estimated linearly?**
+* **Are these good features, given the problem we are trying to solve?**
+
+**After fitting the model, output the coefficients and the R-squared using the broom package.**
+
+**Answer these questions:**
+
+* **How would you interpret the coefficients on GrLivArea and OverallQual?**
+* **How would you interpret the coefficient on NeighborhoodBrkSide?**
+* **Are the features significant?**
+* **Are the features practically significant?**
+* **Is the model a good fit (to the training set)?**
+
+**Answer**
+
+Let's plot the graph to see the relationship between SalePrice and GrLivArea, OverallQual, and Neighborhood.
+
+```{r var6, eval=TRUE, echo=TRUE}
+
+ggplot(train_set, aes(x = GrLivArea, y = SalePrice)) +
+  geom_point(color = "blue") + 
+  geom_smooth(method = "lm", se = FALSE, color = "red") + 
+  theme_bw()
+
+```
+
+The relationship between SalePrice and GrLivArea is linear. It can be estimated linearly. It is an important feature to estimate as it impacts the SalePrice.
+
+```{r var7, eval=TRUE, echo=TRUE}
+
+ggplot(train_set, aes(x = OverallQual, y = SalePrice)) +
+  geom_point(color = "blue") + 
+  geom_smooth(method = "lm", se = FALSE, color = "red") + 
+  theme_bw()
+
+```
+
+The relationship between SalePrice and OverallQual is linear. It can be estimated linearly. It is an important feature to estimate as it impacts the SalePrice.
+
+```{r var8, eval=TRUE, echo=TRUE}
+train_set %>% 
+ggplot() + 
+  geom_bar(aes(x = Neighborhood, y = SalePrice), stat = 'identity') +
+  theme_bw()
+
+```
+
+There is a relationship between SalePrice and Neighborhood. But the Neighborhood is categorical, so no linear relationship with SalePrice. It is an important feature to estimate as it impacts the SalePrice. We will factor it and add to our regression model.
+
+Let's create the models and see the values.
+
+```{r var9, eval=TRUE, echo=TRUE}
+
+# Fit a model for GrLivArea
+lm_1 <- lm(SalePrice ~ GrLivArea, data = train_set)
+mean(train_set$SalePrice)
+tidy(lm_1)
+glance(lm_1)
+
+# Fit a model for OverallQual
+lm_2 <- lm(SalePrice ~ OverallQual, data = train_set)
+mean(train_set$SalePrice)
+tidy(lm_2)
+glance(lm_2)
+
+# Fit a model for Neighborhood
+train_set <- train_set %>% mutate(Neighborhood_fct = factor(Neighborhood, ordered = FALSE))
+lm_3 <- lm(SalePrice ~ Neighborhood_fct, data = train_set)
+mean(train_set$SalePrice)
+tidy(lm_3)
+glance(lm_3)
+
+# Fit a model with all three variables
+lm_4 <- lm(SalePrice ~ GrLivArea + OverallQual + Neighborhood_fct, data = train_set)
+mean(train_set$SalePrice)
+tidy(lm_4)
+glance(lm_4)
+
+```
+
+
+**How would you interpret the coefficients on GrLivArea and OverallQual?**
+
+**Answer**
+
+**How would you interpret the coefficient on NeighborhoodBrkSide?**
+
+**Answer**
+
+**Are the features significant?**
+
+**Answer**
+
+**Are the features practically significant?**
+
+**Answer**
+
+**Is the model a good fit (to the training set)?**
+
+**Answer**
+
+
+
+**Exercise 5**
+
+**Evaluate the model on test_set using the root mean squared error (RMSE). Use the predict function to get the model predictions for the testing set.**
+
+**Hint: use the sqrt() and mean() functions:**
+
+```{r var10, eval=FALSE, echo=TRUE}
+
+test_predictions <- predict(NAME_OF_YOUR_MODEL_HERE, newdata = test_set)
+rmse <- sqrt(mean((___ - ___)^2))
+
+```
+
+**Answer**
+
+Let's predict on the test data and evaluate the model.
+
+```{r var11, eval=TRUE, echo=TRUE}
+test_set <- test_set %>% mutate(Neighborhood_fct = factor(Neighborhood, ordered = FALSE))
+test_predictions <- predict(lm_4, newdata = test_set)
+rmse <- sqrt(mean((test_set$SalePrice - mean(test_set$SalePrice))^2))
+rmse
+
+```
+
+**Exercise 7**
+
+**One downside of the linear model is that it is sensitive to unusual values because the distance incorporates a squared term. Fit a linear model to the simulated data below, and visualise the results. Rerun a few times to generate different simulated datasets. What do you notice about the model?**
+
+```{r var12, eval=FALSE, echo=TRUE}
+
+sim1a <- tibble(
+x = rep(1:10, each = 3),
+y = x * 1.5 + 6 + rt(length(x), df = 2)
+)
+
+```
+
+**Answer**
+
+Lets create a model and run on the simulated data and visualize it.
+
+```{r var13, eval=TRUE, echo=TRUE}
+
+sim1a <- tibble(
+x = rep(1:10, each = 3),
+y = x * 1.5 + 6 + rt(length(x), df = 2)
+)
+
+mod_5 <- lm(y~x, data = sim1a)
+ggplot(sim1a,aes(x,y))+
+  geom_point(size = 2, color = "blue")+
+  geom_abline(intercept = mod_5$coefficients[1],slope = mod_5$coefficients[2])
+
+```
+
+Now, let's run for few times.
+
+```{r var14, eval=TRUE, echo=TRUE}
+
+sim2a <- tibble(
+x = rep(1:10, each = 3),
+y = x * 1.5 + 6 + rt(length(x), df = 2)
+)
+
+mod_5 <- lm(y~x, data = sim1a)
+ggplot(sim2a,aes(x,y))+
+  geom_point(size = 2, color = "blue")+
+  geom_abline(intercept = mod_5$coefficients[1],slope = mod_5$coefficients[2])
+
+sim3a <- tibble(
+x = rep(1:10, each = 3),
+y = x * 1.5 + 6 + rt(length(x), df = 2)
+)
+
+mod_5 <- lm(y~x, data = sim1a)
+ggplot(sim3a,aes(x,y))+
+  geom_point(size = 2, color = "blue")+
+  geom_abline(intercept = mod_5$coefficients[1],slope = mod_5$coefficients[2])
+
+```
+
+Conclusion: Sometimes, one single abnormal value forces the fitted line deviate from the “intutively” best lines.
+
+\center --------------------------------------------------------------------------------------------------------- \center
+
+
+\center __End of Homework 7__ \center
+
+
+
 
 
 
