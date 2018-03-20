@@ -248,13 +248,19 @@ The coefficient for the OverallQual predictor is 47192. This means that for ever
 
 **How would you interpret the coefficient on NeighborhoodBrkSide?**
 
+Low p-value and negative coefficient, not significant.
+
 **Answer**
 
 **Are the features significant?**
 
+It looks like GrLivArea and OverallQual is good predictor for linear model. But Neighborhood is not.
+
 **Answer**
 
 **Are the features practically significant?**
+
+Practically, all three can be significant. For Neighborhood, we can classify the data for each Neighborhood and predict.
 
 **Answer**
 
