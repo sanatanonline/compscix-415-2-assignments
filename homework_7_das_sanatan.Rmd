@@ -30,6 +30,8 @@ library(broom)
 
 # Analysis of Ames Housing dataset and predicting the price
 
+## Load the data
+
 **Exercise 1**
 
 **Load the train.csv dataset into R. How many observations and columns are there?**
@@ -48,10 +50,13 @@ glimpse(train)
 
 So there are 1460 observations with 81 columns (variables)
 
+## Split the Data to training set and test set
 
 **Exercise 2**
 
-**Normally at this point you would spend a few days on EDA, but for this homework we will get right to fitting some linear regression models. Our first step is to randomly split the data into train and test datasets. We will use a 70/30 split. There is an R package that will do the split for you, but let’s get some more practice with R and do it ourselves by filling in the blanks in the code below.**
+**Normally at this point you would spend a few days on EDA, but for this homework we will get right to fitting some linear regression models. **
+
+**Our first step is to randomly split the data into train and test datasets. We will use a 70/30 split. There is an R package that will do the split for you, but let’s get some more practice with R and do it ourselves by filling in the blanks in the code below.**
 
 ```{r var2, eval=FALSE, echo=TRUE}
 
@@ -96,6 +101,8 @@ test_set
 
 Now, we have separated our train data set and test data set.
 
+## The intercept: *SalePrice*
+
 **Exercise 3**
 
 **Our target is called SalePrice. First, we can fit a simple regression model consisting of only the intercept (the average of SalePrice). Fit the model and then use the broom package to**
@@ -126,6 +133,7 @@ Let's fill in the blanks.
 
 # Fit a model with intercept only
 mod_0 <- lm(SalePrice ~ 1, data = train_set)
+summary(mod_0)
 # Double-check that the average SalePrice is equal to our model's coefficient
 mean(train_set$SalePrice)
 tidy(mod_0)
@@ -133,6 +141,8 @@ tidy(mod_0)
 glance(mod_0)
 
 ```
+
+## EDA on *GrLivArea, OverallQual,* and *Neighborhood*
 
 **Exercise 4**
 
@@ -174,6 +184,10 @@ ggplot(train_set, aes(x = OverallQual, y = SalePrice)) +
   geom_smooth(method = "lm", se = FALSE, color = "red") + 
   theme_bw()
 
+ggplot(train_set, aes(x = OverallQual, y = SalePrice, group=OverallQual)) + 
+  geom_boxplot() +
+  theme_bw()
+
 ```
 
 The relationship between SalePrice and OverallQual is linear. It can be estimated linearly. It is an important feature to estimate as it impacts the SalePrice.
@@ -195,12 +209,14 @@ Let's create the models and see the values.
 # Fit a model for GrLivArea
 lm_1 <- lm(SalePrice ~ GrLivArea, data = train_set)
 mean(train_set$SalePrice)
+summary(lm_1)
 tidy(lm_1)
 glance(lm_1)
 
 # Fit a model for OverallQual
 lm_2 <- lm(SalePrice ~ OverallQual, data = train_set)
 mean(train_set$SalePrice)
+summary(lm_2)
 tidy(lm_2)
 glance(lm_2)
 
@@ -208,12 +224,14 @@ glance(lm_2)
 train_set <- train_set %>% mutate(Neighborhood_fct = factor(Neighborhood, ordered = FALSE))
 lm_3 <- lm(SalePrice ~ Neighborhood_fct, data = train_set)
 mean(train_set$SalePrice)
+summary(lm_3)
 tidy(lm_3)
 glance(lm_3)
 
 # Fit a model with all three variables
 lm_4 <- lm(SalePrice ~ GrLivArea + OverallQual + Neighborhood_fct, data = train_set)
 mean(train_set$SalePrice)
+summary(lm_4)
 tidy(lm_4)
 glance(lm_4)
 
@@ -221,6 +239,10 @@ glance(lm_4)
 
 
 **How would you interpret the coefficients on GrLivArea and OverallQual?**
+
+The coefficient for the GrLivArea predictor is 115.833. This means that for every increase by one square foot the house price increases by 115.833 dollars.
+
+The coefficient for the OverallQual predictor is 47192. This means that for every increase by one point for the overall quality, the house price increases by 47192 dollars. 
 
 **Answer**
 
@@ -240,7 +262,10 @@ glance(lm_4)
 
 **Answer**
 
+The adjusted R2 for the model is 0.8050277. This means that the model explains 80.5% of variability of the response data around its mean. I would say it is not a best model. We have to add more variables to get higher accuracy.
 
+
+## Evaluate the model
 
 **Exercise 5**
 
@@ -262,10 +287,14 @@ Let's predict on the test data and evaluate the model.
 ```{r var11, eval=TRUE, echo=TRUE}
 test_set <- test_set %>% mutate(Neighborhood_fct = factor(Neighborhood, ordered = FALSE))
 test_predictions <- predict(lm_4, newdata = test_set)
-rmse <- sqrt(mean((test_set$SalePrice - mean(test_set$SalePrice))^2))
+rmse <- sqrt(mean((test_set$SalePrice - test_predictions)^2))
 rmse
 
 ```
+
+From the above RMSE value, we cal conclude, may be it is not a best model to predict the sales price. 
+
+# Linear Model : downside
 
 **Exercise 7**
 
