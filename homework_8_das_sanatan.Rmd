@@ -1,0 +1,37 @@
+---
+title: "COMPSCIX 415.2 Homework 8"
+author: "Sanatan Das"
+date: "March 24, 2018"
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    number_sections: yes
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\newpage
+
+
+# Code and Documents Git Repository
+
+All the work can be found in the below Git repository location:
+
+https://github.com/sanatanonline/compscix-415-2-assignments
+
+
+# Load packages (prerequisites to run the code in this document)
+```{r load_packages, warning=FALSE, message=FALSE}
+library(mosaicData)
+library(tidyverse)
+library(rpart)
+library(partykit)
+library(ROCR)
+```
+
+## R Markdown
+
