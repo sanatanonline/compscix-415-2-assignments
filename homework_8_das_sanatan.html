@@ -193,13 +193,13 @@ glimpse(train) </code></pre>
 ## $ Fare        &lt;dbl&gt; 7.2500, 71.2833, 7.9250, 53.1000, 8.0500, 8.4583, ...
 ## $ Cabin       &lt;chr&gt; NA, &quot;C85&quot;, NA, &quot;C123&quot;, NA, NA, &quot;E46&quot;, NA, NA, NA, ...
 ## $ Embarked    &lt;chr&gt; &quot;S&quot;, &quot;C&quot;, &quot;S&quot;, &quot;S&quot;, &quot;S&quot;, &quot;Q&quot;, &quot;S&quot;, &quot;S&quot;, &quot;S&quot;, &quot;C&quot;, ...</code></pre>
-<pre class="r"><code>train &lt;- train %&gt;% 
+<pre class="r"><code># Add the factors
+train &lt;- train %&gt;% 
   mutate(Survived_Category = case_when(Survived == 1 ~ 'Yes',
                                        Survived == 0 ~ 'No'))%&gt;% 
   mutate(Pclass_Category = case_when(Pclass == 1 ~ 'First',
                                      Pclass == 2 ~ 'Second',
                                      Pclass == 3 ~ 'Third'))
-
 # glimpse train again
 glimpse(train)</code></pre>
 <pre><code>## Observations: 891
@@ -382,6 +382,7 @@ return(p)
 # Create the ROC curves using the function we created above
 plot_roc(perf_logit_tbl)
 plot_roc(perf_tree_tbl)</code></pre>
+<p><strong>Answer:</strong></p>
 <p>Let’s execute the above code.</p>
 <pre class="r"><code>test_logit &lt;- predict(mod_1, newdata = test_set, type = 'response')
 test_tree &lt;- predict(tree_mod, newdata = test_set)[,2]
@@ -422,7 +423,6 @@ labs(x = 'False positive rate', y = 'True positive rate') +
 theme_bw()
 return(p)
 }
-
 # Create ROC in a single plot for both the model
 t1 &lt;- perf_logit_tbl %&gt;% mutate(model = 'Logistic Regression Model') 
 t2 &lt;- perf_tree_tbl %&gt;% mutate(model = 'Classification Tree Model')

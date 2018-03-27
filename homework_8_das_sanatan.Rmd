@@ -47,17 +47,15 @@ library(ROCR)
 
 # load train.csv
 train = read_csv("C:/view/opt/apps/git/R/compscix-415-2-assignments/titanic/train.csv")
-  
 # glimpse train
 glimpse(train) 
-
+# Add the factors
 train <- train %>% 
   mutate(Survived_Category = case_when(Survived == 1 ~ 'Yes',
                                        Survived == 0 ~ 'No'))%>% 
   mutate(Pclass_Category = case_when(Pclass == 1 ~ 'First',
                                      Pclass == 2 ~ 'Second',
                                      Pclass == 3 ~ 'Third'))
-
 # glimpse train again
 glimpse(train)
 
@@ -265,6 +263,8 @@ plot_roc(perf_tree_tbl)
 
 ```
 
+**Answer:**
+
 Let's execute the above code.
 
 ```{r var12, eval=TRUE, echo=TRUE}
@@ -307,7 +307,6 @@ labs(x = 'False positive rate', y = 'True positive rate') +
 theme_bw()
 return(p)
 }
-
 # Create ROC in a single plot for both the model
 t1 <- perf_logit_tbl %>% mutate(model = 'Logistic Regression Model') 
 t2 <- perf_tree_tbl %>% mutate(model = 'Classification Tree Model')
@@ -404,17 +403,14 @@ test_set_logit_result <- test_set %>% mutate(preds_prob1 = test_logit) %>%
                                 preds_prob1 >= .25 ~ 'Yes'))
 # See the count
 test_set_logit_result %>% count(preds_cat1)
-
 # Mutate the probability and category for classification tree predictions
 test_set_tree_result <- test_set %>% mutate(preds_prob2 = test_tree) %>% 
   mutate(preds_cat2 = case_when(preds_prob2 < .25 ~ 'No',
                                 preds_prob2 >= .25 ~ 'Yes'))
 # See the count
 test_set_tree_result %>% count(preds_cat2)
-
 # Confusion matrix for Logistic model
 test_set_logit_result %>% count(preds_cat1, Survived) %>% spread(Survived, n)
-
 # Confusion matrix for Classification tree model
 test_set_tree_result %>% count(preds_cat2, Survived) %>% spread(Survived, n)
 
