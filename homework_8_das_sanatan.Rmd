@@ -46,7 +46,7 @@ library(ROCR)
 ```{r var1, eval=TRUE, echo=TRUE}
 
 # load train.csv
-train = read_csv("C:/view/opt/apps/git/R/compscix-415-2-assignments/titanic/train.csv")
+train = read_csv("/opt/apps/code/git/compscix-415-2-assignments/titanic/train.csv")
 # glimpse train
 glimpse(train) 
 # Add the factors
@@ -417,3 +417,22 @@ test_set_tree_result %>% count(preds_cat2, Survived) %>% spread(Survived, n)
 ```
 
 It matches with the provided matrix.
+
+## Determine threshold values from ROC curve (additional)
+
+```{r var18, eval=TRUE, echo=TRUE}
+
+# Create cutoffs matrix for Logistic Regression model
+logit_cutoffs <- data.frame(cut=perf_logit@alpha.values[[1]], fpr=perf_logit@x.values[[1]], tpr=perf_logit@y.values[[1]])
+logit_cutoffs <- logit_cutoffs[order(logit_cutoffs$tpr, decreasing = TRUE),]
+head(subset(logit_cutoffs, fpr<0.2))
+# Create cutoffs matrix for Classification Tree model
+tree_cutoffs <- data.frame(cut=perf_tree@alpha.values[[1]], fpr=perf_tree@x.values[[1]], tpr=perf_tree@y.values[[1]])
+tree_cutoffs <- tree_cutoffs[order(tree_cutoffs$tpr, decreasing = TRUE),]
+head(subset(tree_cutoffs, fpr<0.2))
+
+```
+
+
+
+
