@@ -1,0 +1,40 @@
+---
+title: "COMPSCIX 415.2 Homework 9/Final"
+author: "Sanatan Das"
+date: "March 29, 2018"
+header-includes:
+  - \usepackage{titling}
+  - \pretitle{\begin{center}\LARGE\includegraphics[width=5cm]{logo.png}\\[\bigskipamount]}
+  - \posttitle{\end{center}}
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    number_sections: yes
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\newpage
+
+
+# Code and Documents Git Repository
+
+All the work can be found in the below Git repository location:
+
+https://github.com/sanatanonline/compscix-415-2-assignments
+
+
+# Load packages (prerequisites to run the code in this document)
+```{r load_packages, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(rpart)
+library(partykit)
+library(modelr)
+library(randomForest)
+```
+
+# start
