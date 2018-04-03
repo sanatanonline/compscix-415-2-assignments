@@ -37,4 +37,69 @@ library(modelr)
 library(randomForest)
 ```
 
-# start
+# Bootstrapping (10 points)
+
+## Load the Titanic dataset
+
+**1. Follow these steps:**
+
+* **Load the train.csv dataset into R.**
+
+* **Convert all character columns into unordered factors.**
+
+* **Convert the Survived column into an unordered factor because it is loaded as an integer by default.**
+
+* **Take a glimpse of your data to confirm that all of the columns were converted correctly.**
+
+**We will use this same dataset for this entire assignment.**
+
+
+**Answer:**
+
+```{r var1, eval=TRUE, echo=TRUE}
+
+# load train.csv
+train = read_csv("C:/view/opt/apps/git/compscix-415-2-assignments/titanic/train.csv")
+# glimpse train
+glimpse(train) 
+# Add the factors
+train$Survived <- as.factor(train$Survived)
+train$Name <- as.factor(train$Name)
+train$Sex <- as.factor(train$Sex)
+train$Ticket <- as.factor(train$Ticket)
+train$Cabin <- as.factor(train$Cabin)
+train$Embarked <- as.factor(train$Embarked)
+# glimpse train again
+glimpse(train)
+
+```
+
+Now all the character columns are converted to unordered factors.
+
+## Bootstrap samples (100) of titanic data
+
+**2. Use the code below to take 100 bootstrap samples of your data. Confirm that the result is a tibble with a list column of resample objects - each resample object is a bootstrap sample of the titanic dataset.**
+
+```{r var2, eval=FALSE, echo=TRUE}
+
+library(tidyverse)
+library(modelr)
+titanic_boot <- bootstrap(data = ____, n = ___)
+
+```
+
+**Answer:**
+
+Let's fill in the code.
+
+```{r var3, eval=TRUE, echo=TRUE}
+
+titanic_boot <- bootstrap(data = train, n = 100)
+#see the type of titanic_boot
+class(titanic_boot)
+# see titanic_boot
+titanic_boot
+
+```
+
+
