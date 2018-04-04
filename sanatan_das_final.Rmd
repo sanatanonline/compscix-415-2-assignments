@@ -31,6 +31,7 @@ https://github.com/sanatanonline/compscix-415-2-assignments
 # Load packages (prerequisites to run the code in this document)
 ```{r load_packages, warning=FALSE, message=FALSE}
 library(tidyverse)
+library(broom)
 library(rpart)
 library(partykit)
 library(modelr)
@@ -59,11 +60,18 @@ library(randomForest)
 ```{r var1, eval=TRUE, echo=TRUE}
 
 # load train.csv
-train = read_csv("C:/view/opt/apps/git/compscix-415-2-assignments/titanic/train.csv")
+train_original = read_csv("C:/view/opt/apps/git/compscix-415-2-assignments/titanic/train.csv")
 # glimpse train
-glimpse(train) 
+glimpse(train_original) 
+# copy to a different dataset
+train <- data.frame(train_original)
 # Add the factors
-train$Survived <- as.factor(train$Survived)
+train <- train %>% 
+  mutate(Survived_Category = case_when(Survived == 1 ~ 'Yes',
+                                       Survived == 0 ~ 'No'))%>% 
+  mutate(Pclass_Category = case_when(Pclass == 1 ~ 'First',
+                                     Pclass == 2 ~ 'Second',
+                                     Pclass == 3 ~ 'Third'))
 train$Name <- as.factor(train$Name)
 train$Sex <- as.factor(train$Sex)
 train$Ticket <- as.factor(train$Ticket)
@@ -76,7 +84,7 @@ glimpse(train)
 
 Now all the character columns are converted to unordered factors.
 
-## Bootstrap samples (100) of titanic data
+## Create bootstrap samples (n=100)
 
 **2. Use the code below to take 100 bootstrap samples of your data. Confirm that the result is a tibble with a list column of resample objects - each resample object is a bootstrap sample of the titanic dataset.**
 
@@ -99,7 +107,261 @@ titanic_boot <- bootstrap(data = train, n = 100)
 class(titanic_boot)
 # see titanic_boot
 titanic_boot
+# see the type of elements
+class(titanic_boot$strap[[1]])
 
 ```
+
+We can see that a tibble of 100 rows is created with a list column of resample objects - each resample object is a bootstrap sample of the titanic dataset.
+
+## Verify bootstrap samples
+
+**3. Confirm that some of your bootstrap samples are in fact bootstrap samples (meaning they should have some rows that are repeated). You can use the *n_distinct()* function from dplyr to see that your samples have different numbers of unique rows. Use the code below to help you extract some of the resample objects from the strap column (which is an R list), convert them to tibbles, and then count distinct rows. Use the code below, no changes necessary.**
+
+```{r var4, eval=FALSE, echo=TRUE}
+
+# since the strap column of titanic_boot is a list, we can
+# extract the resampled data using the double brackets [[]],
+# and just pick out a few of them to compare the number of
+# distinct rows
+as.tibble(titanic_boot$strap[[1]]) %>% n_distinct()
+as.tibble(titanic_boot$strap[[2]]) %>% n_distinct()
+as.tibble(titanic_boot$strap[[3]]) %>% n_distinct()
+
+```
+
+**Answer:**
+
+Let's run the code.
+
+```{r var5, eval=TRUE, echo=TRUE}
+
+# since the strap column of titanic_boot is a list, we can
+# extract the resampled data using the double brackets [[]],
+# and just pick out a few of them to compare the number of
+# distinct rows
+
+# not distinct
+as.tibble(titanic_boot$strap[[1]]) %>% count()
+# distinct
+as.tibble(titanic_boot$strap[[1]]) %>% n_distinct()
+# not distinct
+as.tibble(titanic_boot$strap[[2]]) %>% count()
+# distinct
+as.tibble(titanic_boot$strap[[2]]) %>% n_distinct()
+# not distinct
+as.tibble(titanic_boot$strap[[3]]) %>% count()
+# distinct
+as.tibble(titanic_boot$strap[[3]]) %>% n_distinct()
+
+```
+
+From above, ew see that every tibble has 891 rows (length of the dataset) but the number distinct rows are less than that. That means some rows are repeated.
+
+## Demonstration of Central Limit Theorem
+
+**4. Now, let’s demonstrate the Central Limit Theorem using the Age column. We’ll iterate through all 100 bootstrap samples, take the mean of Age, and collect the results.**
+
+* **We will define our own function to pull out the mean of Age from each bootstrap sample and**
+
+* **create our own for loop to iterate through.**
+
+**Use the code below and fill in the blanks.**
+
+```{r var6, eval=FALSE, echo=TRUE}
+
+age_mean <- function(___) {
+data <- as.tibble(___) # convert input data set to a tibble
+mean_age <- mean(data$Age, na.rm = TRUE) # take the mean of Age, remove NAs
+return(____) # return the mean value of Age from data
+}
+# loop through the 100 bootstrap samples and use the age_mean()
+# function
+all_means <- rep(NA, 100)
+# start the loop
+for(i in 1:___) {
+all_means[_] <- age_mean(titanic_boot$strap[[i]])
+}
+# take a look at some of the means you calculated from your samples
+head(all_means)
+# convert to a tibble so we can use if for plotting
+all_means <- tibble(all_means = all_means)
+
+```
+
+**Answer:**
+
+Let's fill in the code.
+
+```{r var7, eval=TRUE, echo=TRUE}
+
+age_mean <- function(input) {
+data <- as.tibble(input) # convert input data set to a tibble
+mean_age <- mean(data$Age, na.rm = TRUE) # take the mean of Age, remove NAs
+return(mean_age) # return the mean value of Age from data
+}
+# loop through the 100 bootstrap samples and use the age_mean()
+# function
+all_means <- rep(NA, 100)
+# start the loop
+for(i in 1:100) {
+all_means[i] <- age_mean(titanic_boot$strap[[i]])
+}
+# take a look at some of the means you calculated from your samples
+head(all_means)
+# convert to a tibble so we can use if for plotting
+all_means <- tibble(all_means = all_means)
+
+```
+
+**5. Plot a histogram of *all_means*.**
+
+The plot is as below.
+
+```{r var8, eval=TRUE, echo=TRUE}
+# Histogram
+ggplot(data=all_means) +
+  geom_histogram(aes(x = all_means), binwidth = 0.5) +
+  theme_bw()
+# Density Curve
+ggplot(data=all_means) +
+  geom_density(aes(x = all_means)) +
+  theme_bw()
+
+```
+
+**6. Find the standard error of the sample mean of Age using your boostrap sample means. Compare the empirical standard error to the theoretical standard error.**
+
+**Answer:**
+
+First find out the standard error without resampling (theoritical standard error).
+
+```{r var9, eval=TRUE, echo=TRUE}
+# theoritical standard error
+lm_fit <- lm(Survived ~ Age, data = train)
+tidy(lm_fit) %>% select(term, std.error)
+
+```
+
+Now find out bootstrap standard error.
+
+```{r var10, eval=TRUE, echo=TRUE}
+# function to take a bootstrap sample, 
+# fit the linear regression model, 
+# and return the coefficients
+boot_fun <- function(data_samp) {
+  lm_samp <- lm(Survived ~ Age, data = data_samp)
+  return(tidy(lm_samp)$estimate)
+}
+# create empty vectors to save the output
+intercepts <- rep(NA, 100)
+slopes <- rep(NA, 100)
+for(i in 1:100) { # loop over the sequence 1,2,3,...1000
+  coefs <- boot_fun(titanic_boot$strap[[i]])
+  intercepts[i] <- coefs[1] # save the output
+  slopes[i] <- coefs[2] # save the output
+}
+# convert to tibble
+all_results <- tibble(intercepts, slopes)
+# bootstrap standard error
+all_results %>% summarize(se_intercept = sd(intercepts), 
+                          se_slope = sd(slopes))
+
+```
+
+From the above result, we can see that the bootstrap standard error is less compared to standard error without resampling (theoritical standard error)
+
+# Random forest (10 points)
+
+## Split the dataset
+
+**On the last homework, we fit a decision tree to the Titanic data set to predict the probability of survival given the features. This week we’ll use the random forest and compare our results to the decision tree.**
+
+**1. Randomly split your data into training and testing using the code below so that we all have the same sets.**
+
+```{r var11, eval=FALSE, echo=TRUE}
+
+set.seed(987)
+model_data <- resample_partition(____, c(test = 0.3, train = 0.7))
+train_set <- as.tibble(model_data$____)
+test_set <- as.tibble(model_data$____)
+
+```
+
+**Answer:**
+
+```{r var12, eval=TRUE, echo=TRUE}
+
+set.seed(987)
+train$Survived <- as.factor(train$Survived)
+model_data <- resample_partition(train, c(test = 0.3, train = 0.7))
+train_set <- as.tibble(model_data$train)
+test_set <- as.tibble(model_data$test)
+
+train_set
+test_set
+
+```
+
+## Fit a decision tree
+
+**2. Fit a decision tree to *train_set* using the *rpart* package, and using *Pclass*, *Sex*, *Age*, *SibSp*, *Parch*, *Fare*, *Embarked* as the features.**
+
+* **Plot the tree using the *partykit* package.**
+
+* **What do you notice about this tree compared to the one from last week which only contained three features?**
+
+**Answer:**
+
+```{r var13, eval=TRUE, echo=TRUE}
+
+# Last week's tree model
+tree_mod_1 <- rpart(Survived_Category ~ Pclass_Category + Sex + Fare, data = train_set)
+# plot the tree
+plot(as.party(tree_mod_1))
+
+# This week's new tree model
+tree_mod <- rpart(Survived_Category ~ Pclass_Category + Sex + Age + SibSp + Parch + Fare + Embarked, data = train_set)
+# plot the tree
+plot(as.party(tree_mod))
+
+```
+
+**Observation:** From the above, plots we see that in last week's tree, we had just 3 features and created 6 leaf nodes or categories. This week, we are creating the tree model with 7 features which has created a tree with more levels and 8 leaf nodes. Not much change in Sex=female for First and Second class passengers.
+
+## Fit a random forest
+
+**3. Fit a random forest to *train_set* using the *randomForest* package, and using *Pclass*, *Sex*, *Age*, *SibSp*, *Parch*, *Fare*, *Embarked* as the features. We’ll use 500 trees and sample four features at each split. Use the code below and fill in the blanks.**
+
+```{r var14, eval=FALSE, echo=TRUE}
+
+library(randomForest)
+rf_mod <- randomForest(____ ~ _____,
+                        data = train_set,
+                        ntrees = 500,
+                        mtry = 4,
+                        na.action = na.roughfix)
+
+```
+
+**Answer:**
+
+Let's fill in the code.
+
+```{r var15, eval=TRUE, echo=TRUE}
+
+rf_mod <- randomForest(Survived ~ Pclass + Sex + Age + SibSp + Parch + Fare + Embarked,
+                        data = train_set,
+                        ntrees = 500,
+                        mtry = 4,
+                        na.action = na.roughfix)
+
+```
+
+
+
+
+
+
 
 
