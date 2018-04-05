@@ -30,12 +30,15 @@ https://github.com/sanatanonline/compscix-415-2-assignments
 
 # Load packages (prerequisites to run the code in this document)
 ```{r load_packages, warning=FALSE, message=FALSE}
+
+# load the packages
 library(tidyverse)
 library(broom)
 library(rpart)
 library(partykit)
 library(modelr)
 library(randomForest)
+
 ```
 
 # Bootstrapping (10 points)
@@ -65,7 +68,7 @@ train_original = read_csv("C:/view/opt/apps/git/compscix-415-2-assignments/titan
 glimpse(train_original) 
 # copy to a different dataset
 train <- data.frame(train_original)
-# Add the factors
+# add the factors
 train <- train %>% 
   mutate(Survived_Category = case_when(Survived == 1 ~ 'Yes',
                                        Survived == 0 ~ 'No'))%>% 
@@ -102,6 +105,7 @@ Let's fill in the code.
 
 ```{r var3, eval=TRUE, echo=TRUE}
 
+# create bootstrap
 titanic_boot <- bootstrap(data = train, n = 100)
 #see the type of titanic_boot
 class(titanic_boot)
@@ -156,7 +160,7 @@ as.tibble(titanic_boot$strap[[3]]) %>% n_distinct()
 
 ```
 
-From above, ew see that every tibble has 891 rows (length of the dataset) but the number distinct rows are less than that. That means some rows are repeated.
+From the above, we see that every tibble has 891 rows (length of the dataset) but the number distinct rows are less than that. That means some rows are repeated.
 
 ## Demonstration of Central Limit Theorem
 
@@ -195,6 +199,7 @@ Let's fill in the code.
 
 ```{r var7, eval=TRUE, echo=TRUE}
 
+# function for calculating mean age
 age_mean <- function(input) {
 data <- as.tibble(input) # convert input data set to a tibble
 mean_age <- mean(data$Age, na.rm = TRUE) # take the mean of Age, remove NAs
@@ -219,11 +224,11 @@ all_means <- tibble(all_means = all_means)
 The plot is as below.
 
 ```{r var8, eval=TRUE, echo=TRUE}
-# Histogram
+# Plot Histogram
 ggplot(data=all_means) +
   geom_histogram(aes(x = all_means), binwidth = 0.5) +
   theme_bw()
-# Density Curve
+# Plot Density Curve
 ggplot(data=all_means) +
   geom_density(aes(x = all_means)) +
   theme_bw()
@@ -270,6 +275,7 @@ all_results %>% summarize(se_intercept = sd(intercepts),
 ```
 
 From the above result, we can see that the bootstrap standard error is less compared to standard error without resampling (theoritical standard error)
+
 
 # Random forest (10 points)
 
