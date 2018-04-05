@@ -35,13 +35,14 @@ https://github.com/sanatanonline/compscix-415-2-assignments
 library(tidyverse)
 library(broom)
 library(rpart)
+library(ROCR)
 library(partykit)
 library(modelr)
 library(randomForest)
 
 ```
 
-# Bootstrapping (10 points)
+# Bootstrapping
 
 ## Load the Titanic dataset
 
@@ -63,15 +64,13 @@ library(randomForest)
 ```{r var1, eval=TRUE, echo=TRUE}
 
 # load train.csv
-train_original = read_csv("C:/view/opt/apps/git/compscix-415-2-assignments/titanic/train.csv")
+train = read_csv("C:/view/opt/apps/git/compscix-415-2-assignments/titanic/train.csv")
 # glimpse train
-glimpse(train_original) 
-# copy to a different dataset
-train <- data.frame(train_original)
+glimpse(train) 
 # add the factors
 train <- train %>% 
   mutate(Survived_Category = case_when(Survived == 1 ~ 'Yes',
-                                       Survived == 0 ~ 'No'))%>% 
+                                       Survived == 0 ~ 'No')) %>% 
   mutate(Pclass_Category = case_when(Pclass == 1 ~ 'First',
                                      Pclass == 2 ~ 'Second',
                                      Pclass == 3 ~ 'Third'))
@@ -87,7 +86,7 @@ glimpse(train)
 
 Now all the character columns are converted to unordered factors.
 
-## Create bootstrap samples (n=100)
+## Create bootstrap samples
 
 **2. Use the code below to take 100 bootstrap samples of your data. Confirm that the result is a tibble with a list column of resample objects - each resample object is a bootstrap sample of the titanic dataset.**
 
@@ -145,17 +144,17 @@ Let's run the code.
 # and just pick out a few of them to compare the number of
 # distinct rows
 
-# not distinct
+# not distinct rows
 as.tibble(titanic_boot$strap[[1]]) %>% count()
-# distinct
+# distinct rows
 as.tibble(titanic_boot$strap[[1]]) %>% n_distinct()
-# not distinct
+# not distinct rows
 as.tibble(titanic_boot$strap[[2]]) %>% count()
-# distinct
+# distinct rows
 as.tibble(titanic_boot$strap[[2]]) %>% n_distinct()
-# not distinct
+# not distinct rows
 as.tibble(titanic_boot$strap[[3]]) %>% count()
-# distinct
+# distinct rows
 as.tibble(titanic_boot$strap[[3]]) %>% n_distinct()
 
 ```
@@ -228,7 +227,7 @@ The plot is as below.
 ggplot(data=all_means) +
   geom_histogram(aes(x = all_means), binwidth = 0.5) +
   theme_bw()
-# Plot Density Curve
+# Plot Density Curve (additiona)
 ggplot(data=all_means) +
   geom_density(aes(x = all_means)) +
   theme_bw()
@@ -239,18 +238,36 @@ ggplot(data=all_means) +
 
 **Answer:**
 
-First find out the standard error without resampling (theoritical standard error).
+Standard Error (theoritical and empirical)
 
 ```{r var9, eval=TRUE, echo=TRUE}
+
+stderr <- function(x){
+  return(sqrt(var(x,na.rm=TRUE)/length(na.omit(x))))
+}
+# theoritical standard error
+stderr_1 <- stderr(train$Age)
+stderr_1
+
+# empirical standard error
+stderr_2 <- stderr(all_means)
+stderr_2
+
+```
+
+Find out the standard error without resampling (theoritical standard error using lm).
+
+```{r var10, eval=TRUE, echo=TRUE}
+
 # theoritical standard error
 lm_fit <- lm(Survived ~ Age, data = train)
 tidy(lm_fit) %>% select(term, std.error)
 
 ```
 
-Now find out bootstrap standard error.
+Now find out bootstrap standard error (using lm).
 
-```{r var10, eval=TRUE, echo=TRUE}
+```{r var11, eval=TRUE, echo=TRUE}
 # function to take a bootstrap sample, 
 # fit the linear regression model, 
 # and return the coefficients
@@ -277,7 +294,7 @@ all_results %>% summarize(se_intercept = sd(intercepts),
 From the above result, we can see that the bootstrap standard error is less compared to standard error without resampling (theoritical standard error)
 
 
-# Random forest (10 points)
+# Random forest
 
 ## Split the dataset
 
@@ -285,7 +302,7 @@ From the above result, we can see that the bootstrap standard error is less comp
 
 **1. Randomly split your data into training and testing using the code below so that we all have the same sets.**
 
-```{r var11, eval=FALSE, echo=TRUE}
+```{r var12, eval=FALSE, echo=TRUE}
 
 set.seed(987)
 model_data <- resample_partition(____, c(test = 0.3, train = 0.7))
@@ -296,15 +313,15 @@ test_set <- as.tibble(model_data$____)
 
 **Answer:**
 
-```{r var12, eval=TRUE, echo=TRUE}
+```{r var13, eval=TRUE, echo=TRUE}
 
 set.seed(987)
+# factor the Survived column
 train$Survived <- as.factor(train$Survived)
 model_data <- resample_partition(train, c(test = 0.3, train = 0.7))
 train_set <- as.tibble(model_data$train)
-test_set <- as.tibble(model_data$test)
-
 train_set
+test_set <- as.tibble(model_data$test)
 test_set
 
 ```
@@ -319,7 +336,7 @@ test_set
 
 **Answer:**
 
-```{r var13, eval=TRUE, echo=TRUE}
+```{r var14, eval=TRUE, echo=TRUE}
 
 # Last week's tree model
 tree_mod_1 <- rpart(Survived_Category ~ Pclass_Category + Sex + Fare, data = train_set)
@@ -339,7 +356,7 @@ plot(as.party(tree_mod))
 
 **3. Fit a random forest to *train_set* using the *randomForest* package, and using *Pclass*, *Sex*, *Age*, *SibSp*, *Parch*, *Fare*, *Embarked* as the features. We’ll use 500 trees and sample four features at each split. Use the code below and fill in the blanks.**
 
-```{r var14, eval=FALSE, echo=TRUE}
+```{r var15, eval=FALSE, echo=TRUE}
 
 library(randomForest)
 rf_mod <- randomForest(____ ~ _____,
@@ -354,7 +371,7 @@ rf_mod <- randomForest(____ ~ _____,
 
 Let's fill in the code.
 
-```{r var15, eval=TRUE, echo=TRUE}
+```{r var16, eval=TRUE, echo=TRUE}
 
 rf_mod <- randomForest(Survived ~ Pclass + Sex + Age + SibSp + Parch + Fare + Embarked,
                         data = train_set,
@@ -364,9 +381,159 @@ rf_mod <- randomForest(Survived ~ Pclass + Sex + Age + SibSp + Parch + Fare + Em
 
 ```
 
+## Comparion of the performance of the decision tree with the random forest model
 
 
+**4. Compare the performance of the decision tree with the random forest using the ROCR package and the AUC. Which model performs the best?**
 
+**Here’s some code to get you started.**
+
+```{r var17, eval=FALSE, echo=TRUE}
+
+library(ROCR)
+rf_preds <- predict(____, newdata = test_set, type = 'prob')[,2]
+tree_preds <- predict(____, newdata = test_set)[,2]
+pred_rf <- prediction(predictions = _____, labels = ____)
+pred_tree <- prediction(predictions = _____, labels = ____)
+
+```
+
+
+**Answer:**
+
+Let's fill in the code.
+
+```{r var18, eval=TRUE, echo=TRUE}
+
+# predit the test data
+rf_preds <- predict(rf_mod, newdata = test_set, type = 'prob')[,2]
+tree_preds <- predict(tree_mod, newdata = test_set)[,2]
+# create the prediction objects for both models
+pred_rf <- prediction(predictions = rf_preds, labels = test_set$Survived)
+pred_tree <- prediction(predictions = tree_preds, labels = test_set$Survived_Category)
+# calculate the AUC
+auc_rf <- performance(pred_rf, measure = 'auc')
+auc_tree <- performance(pred_tree, measure = 'auc')
+
+```
+
+Extract the AUC value of the models
+
+```{r var19, eval=TRUE, echo=TRUE}
+
+# extract the AUC value for random forest
+auc_rf@y.values[[1]]
+# extract the AUC value for decision tree
+auc_tree@y.values[[1]]
+
+```
+
+We see that the AUC value is higher for random forest than decision tree model. That means, random forest is performing better than decision tree model.
+
+## Plot the ROC curves
+
+**5. Plot the ROC curves for the decision tree and the random forest above, on the same plot with a legend that differentiates and specifies which curve belongs to which model. Use the code below to get you started. Hints:**
+
+* **You will have to modify the plot_roc() function to plot the two curves together with different colors and a legend.**
+
+* **This is easier to do if the data for plotting the two curves are in one tibble. You can combine tibbles using the bind_rows() function.**
+
+```{r var20, eval=FALSE, echo=TRUE}
+
+# get the FPR and TPR for the logistic model
+# recall that the ROC curve plots the FPR on the x-axis
+perf_rf <- performance(pred_rf, measure = 'tpr', x.measure = 'fpr')
+perf_rf_tbl <- tibble(perf_rf@x.values[[1]], perf_rf@y.values[[1]])
+# Change the names of the columns of the tibble
+names(perf_rf_tbl) <- c('fpr', 'tpr')
+# get the FPR and TPR for the tree model
+perf_tree <- performance(pred_tree, measure = 'tpr', x.measure = 'fpr')
+perf_tree_tbl <- tibble(perf_tree@x.values[[1]], perf_tree@y.values[[1]])
+# Change the names of the columns of the tibble
+names(perf_tree_tbl) <- c('fpr', 'tpr')
+# Plotting function for plotting a nice ROC curve using ggplot
+plot_roc <- function(perf_tbl) {
+p <- ggplot(data = perf_tbl, aes(x = fpr, y = tpr)) +
+geom_line(color = 'blue') +
+geom_abline(intercept = 0, slope = 1, lty = 3) +
+labs(x = 'False positive rate', y = 'True positive rate') +
+theme_bw()
+return(p)
+}
+
+```
+
+**Answer:**
+
+Let's update the code and run it.
+
+```{r var21, eval=TRUE, echo=TRUE}
+
+# get the FPR and TPR for the random forest model
+# recall that the ROC curve plots the FPR on the x-axis
+perf_rf <- performance(pred_rf, measure = 'tpr', x.measure = 'fpr')
+perf_rf_tbl <- tibble(perf_rf@x.values[[1]], perf_rf@y.values[[1]])
+# Change the names of the columns of the tibble
+names(perf_rf_tbl) <- c('fpr', 'tpr')
+# get the FPR and TPR for the decision tree model
+perf_tree <- performance(pred_tree, measure = 'tpr', x.measure = 'fpr')
+perf_tree_tbl <- tibble(perf_tree@x.values[[1]], perf_tree@y.values[[1]])
+# Change the names of the columns of the tibble
+names(perf_tree_tbl) <- c('fpr', 'tpr')
+# Plotting function for plotting a nice ROC curve using ggplot
+plot_roc <- function(perf_tbl) {
+p <- ggplot(data = perf_tbl, aes(x = fpr, y = tpr, group=Model, colour=Model)) +
+geom_line() +
+geom_abline(intercept = 0, slope = 1, lty = 3) +
+labs(x = 'False positive rate', y = 'True positive rate') +
+theme_bw()
+return(p)
+}
+# Create ROC
+t1 <- perf_rf_tbl %>% mutate(Model = 'Random Forest') 
+t2 <- perf_tree_tbl %>% mutate(Model = 'Decision Tree')
+t3 <- bind_rows(t1, t2)
+plot_roc(t3)
+
+```
+
+**6. Answer these questions about the ROC curves:**
+
+* **which model performs better: decision tree or random forest?**
+
+* **what is the approximate false positive rate, for both the decision tree and the random forest, if we attain a true positive rate of approximately 0.75? Answers do not need to be exact - just ballpark it by looking at the plots.**
+
+**Answer:**
+
+From the ROC curves, we see that random forest is performing better than decision tree model.
+
+**Random Forest**
+
+To attain a True Positive Rate: 0.75, False Positive Rate: 0.14
+
+**Decision Tree**
+
+To attain a True Positive Rate: 0.75, False Positive Rate: 0.36
+
+Let's create a cut-off matric to confirm this.
+
+```{r var22, eval=TRUE, echo=TRUE}
+
+# Create cutoffs matrix for Random Forest model
+rf_cutoffs <- data.frame(cut=perf_rf@alpha.values[[1]], fpr=perf_rf@x.values[[1]], tpr=perf_rf@y.values[[1]])
+rf_cutoffs <- rf_cutoffs[order(rf_cutoffs$tpr, decreasing = FALSE),]
+head(subset(rf_cutoffs, tpr>=0.7))
+# Create cutoffs matrix for Decision Tree model
+tree_cutoffs <- data.frame(cut=perf_tree@alpha.values[[1]], fpr=perf_tree@x.values[[1]], tpr=perf_tree@y.values[[1]])
+tree_cutoffs <- tree_cutoffs[order(tree_cutoffs$tpr, decreasing = FALSE),]
+head(subset(tree_cutoffs, tpr>=0.6))
+
+```
+
+\center --------------------------------------------------------------------------------------------------------- \center
+
+
+\center __End of COMPSCIX 415.2 Homework 9/Final__ \center
 
 
 
