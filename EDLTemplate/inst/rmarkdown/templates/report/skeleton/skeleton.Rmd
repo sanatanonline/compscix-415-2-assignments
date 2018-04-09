@@ -1,0 +1,32 @@
+---
+title: "The emerging student loan default crisis is worse than we thought : A Brief Study and A Solution"
+author: "Sanatan Das"
+date: "March 29, 2018"
+header-includes:
+  - \usepackage{titling}
+  - \pretitle{\begin{center}\LARGE\includegraphics[width=5cm]{logo.png}\\[\bigskipamount]}
+  - \posttitle{\end{center}}
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    number_sections: yes
+    toc: yes
+---
+
+<script>
+   $(document).ready(function() {
+     $head = $('#header');
+     $head.prepend('<img src=\"logo.png\" style=\"float: right;width: 150px;\"/>')
+   });
+</script>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\newpage
+
+# The Study Report on Student Loan Default Crisis
+
+## Introduction
